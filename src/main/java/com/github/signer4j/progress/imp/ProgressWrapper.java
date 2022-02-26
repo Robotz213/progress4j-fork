@@ -37,6 +37,11 @@ public class ProgressWrapper implements IProgress {
   public void step(String mensagem, Object... params) throws InterruptedException{
     progress.step(mensagem, params);
   }
+  
+  @Override
+  public void info(String mensagem, Object... params) throws InterruptedException {
+    progress.info(mensagem, params);
+  }
 
   @Override
   public void end() throws InterruptedException {

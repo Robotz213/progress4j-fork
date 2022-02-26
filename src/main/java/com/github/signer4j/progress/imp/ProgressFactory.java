@@ -21,9 +21,13 @@ public class ProgressFactory implements IProgressFactory {
   private ImageIcon logIcon;
   
   public ProgressFactory() {
-    this(null, null);
+    this(Images.PROGRESS_ICON.asImage());
   }
   
+  public ProgressFactory(Image icon) {
+    this(icon, Images.LOG.asIcon());
+  }
+
   public ProgressFactory(Image icon, ImageIcon logIcon) {
     this.icon = icon;
     this.logIcon = logIcon;

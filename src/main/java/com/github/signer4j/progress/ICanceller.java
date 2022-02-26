@@ -1,4 +1,4 @@
-package com.github.signer4j.progress.imp;
+package com.github.signer4j.progress;
 
 @FunctionalInterface
 public interface ICanceller {

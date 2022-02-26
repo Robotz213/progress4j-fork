@@ -59,14 +59,25 @@ public class DefaultProgress implements IProgress {
 
   @Override
   public final void step(String message, Object... args) throws InterruptedException {
+    send(true, message, args);
+  }
+
+  @Override
+  public final void info(String message, Object... args) throws InterruptedException {
+    send(false, message, args);
+  }
+
+  private void send(boolean advance, String message, Object... args) throws InterruptedException {
     checkInterrupted();
     State currentState;
     if (stack.isEmpty() || (currentState = stack.peek()).isAborted())
       return;
-    currentState.incrementAndGet();
+    if (advance) {
+      currentState.incrementAndGet();
+    }
     notifyStep(currentState, String.format(message, args));
   }
-
+  
   @Override
   public final void end() throws InterruptedException {
     checkInterrupted();

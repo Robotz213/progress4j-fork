@@ -95,4 +95,9 @@ public enum ProgressOptions implements IProgressView {
   public Throwable getAbortCause() {
     return null;
   }
+
+  @Override
+  public void info(String mensagem, Object... params) throws InterruptedException {
+    
+  }
 }

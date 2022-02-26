@@ -13,9 +13,10 @@ public class TestSample {
       IProgressView progress = f.get();
       progress.display();
       try {
-        progress.begin(Stage.PROCESSING, 100);
-        for(int i = 1; i <= 100; i++) {
-          progress.step("Step I " + i);
+        int total = 200;
+        progress.begin(Stage.PROCESSING, total);
+        for(int i = 1; i <= total; i++) {
+          progress.step("Operação  " + i);
           Threads.sleep(100);
         }
         progress.end();

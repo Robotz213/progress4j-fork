@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -34,12 +35,12 @@ import javax.swing.border.EtchedBorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.signer4j.progress.ICanceller;
 import com.github.signer4j.progress.IStageEvent;
 import com.github.signer4j.progress.IStepEvent;
 import com.github.utils4j.imp.Args;
 import com.github.utils4j.imp.SimpleFrame;
-
-import net.miginfocom.swing.MigLayout;
+import com.github.utils4j.imp.Stack;
 
 class ProgressWindow extends SimpleFrame implements ICanceller {
 
@@ -52,10 +53,20 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
   private final JProgressBar progressBar = new JProgressBar();
   
   private final Map<Thread, List<Runnable>> cancels = new HashMap<>(2);
+  
+  private final Stack<ProgressState> stackState = new Stack<>();
+  
+  ProgressWindow() {
+    this(Images.PROGRESS_ICON.asImage());
+  }
+  
+  ProgressWindow(Image icon) {
+    this(icon, Images.LOG.asIcon());
+  }
 
   ProgressWindow(Image icon, ImageIcon log) {
     super("Progresso", icon);
-    setBounds(100, 100, 450, log != null ? 154 : 107);
+    setBounds(100, 100, 450, 154);
     JPanel contentPane = new JPanel();
     contentPane.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
     contentPane.setLayout(new BorderLayout(0, 0));
@@ -72,6 +83,8 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
     pngNorth.add(lblLog);
 
     pngNorth.add(progressBar);
+    
+    
     resetProgress();
 
     final JPanel pnlSouth = new JPanel();
@@ -139,10 +152,14 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
   }
 
   private void resetProgress() {
+    this.textArea.setText("");
     this.progressBar.setIndeterminate(false);
+    this.progressBar.setMaximum(0);
+    this.progressBar.setMinimum(0);
+    this.progressBar.setValue(-1);
     this.progressBar.setStringPainted(true);
     this.progressBar.setString("");
-    this.textArea.setText("");
+    this.stackState.clear();
   }
 
   final void reveal() {
@@ -177,7 +194,10 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
     }
     LOGGER.info(log);
     invokeLater(() -> {
-      progressBar.setString(message);
+      //progressBar.setString(message);
+      if (!indeterminated) {
+        progressBar.setValue(step);
+      }
       textArea.append(log + "\n\r");
     });
   }
@@ -188,13 +208,22 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
     final String text = tabSize + message;
     LOGGER.info(text);
     invokeLater(() -> {
-      if (!progressBar.isIndeterminate())
-        progressBar.setIndeterminate(true);
+      if (!e.isEnd())
+        this.stackState.push(new ProgressState(this.progressBar));
+      final boolean indeterminated = e.isIndeterminated();
+      progressBar.setIndeterminate(indeterminated);
+      if (!indeterminated) {
+        progressBar.setMaximum(e.getTotal());
+        progressBar.setMinimum(0);
+        progressBar.setValue(e.getStep());
+      }
       this.progressBar.setString(message);
       textArea.append(text + "\n\r");
+      if (e.isEnd())
+        this.stackState.pop().restore(this.progressBar);
     });    
   }
-  
+
   final synchronized void cancel() {
     Runnable cancelCode = () -> {
       cancels.entrySet().stream()
@@ -221,4 +250,30 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
       cancels.put(thread, codes = new ArrayList<>(2));
     codes.add(cancelCode);
   }
+  
+  private static class ProgressState {
+    private String message;
+    private int maximum;
+    private int minimum;
+    private int value;
+    private boolean indeterminated;
+    
+    private ProgressState(JProgressBar bar) {
+      message = bar.getString();
+      maximum = bar.getMaximum();
+      minimum = bar.getMinimum();
+      indeterminated = bar.isIndeterminate();
+      value = bar.getValue();
+    }
+    
+    private void restore(JProgressBar bar) {
+      bar.setString(message);
+      bar.setMaximum(maximum);
+      bar.setMinimum(minimum);
+      bar.setValue(value);
+      bar.setIndeterminate(indeterminated);
+    }
+  }
 }
+
+
