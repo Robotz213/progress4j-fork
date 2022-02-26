@@ -1,8 +1,8 @@
-package com.github.signer4j.progress.imp;
+package com.github.progress4j.imp;
 
 import java.awt.Image;
 
-import com.github.signer4j.progress.IProgressView;
+import com.github.progress4j.IProgressView;
 import com.github.utils4j.imp.Args;
 import com.github.utils4j.imp.Ids;
 

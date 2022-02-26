@@ -1,7 +1,7 @@
-package com.github.signer4j.progress.imp;
+package com.github.progress4j.imp;
 
-import com.github.signer4j.progress.IState;
-import com.github.signer4j.progress.IStepEvent;
+import com.github.progress4j.IState;
+import com.github.progress4j.IStepEvent;
 
 class StepEvent extends Event implements IStepEvent {
   StepEvent(IState state, String message, int stackSize) {

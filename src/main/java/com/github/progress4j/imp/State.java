@@ -1,7 +1,7 @@
-package com.github.signer4j.progress.imp;
+package com.github.progress4j.imp;
 
-import com.github.signer4j.progress.IStage;
-import com.github.signer4j.progress.IState;
+import com.github.progress4j.IStage;
+import com.github.progress4j.IState;
 import com.github.utils4j.imp.StopWatch;
 import com.github.utils4j.imp.Throwables;
 

@@ -1,13 +1,13 @@
-package com.github.signer4j.progress.imp;
+package com.github.progress4j.imp;
 
 import java.util.function.Consumer;
 
-import com.github.signer4j.progress.IProgress;
-import com.github.signer4j.progress.IProgressView;
-import com.github.signer4j.progress.IStage;
-import com.github.signer4j.progress.IStageEvent;
-import com.github.signer4j.progress.IState;
-import com.github.signer4j.progress.IStepEvent;
+import com.github.progress4j.IProgress;
+import com.github.progress4j.IProgressView;
+import com.github.progress4j.IStage;
+import com.github.progress4j.IStageEvent;
+import com.github.progress4j.IState;
+import com.github.progress4j.IStepEvent;
 
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;

@@ -1,7 +1,7 @@
-package com.github.signer4j.progress.imp;
+package com.github.progress4j.imp;
 
-import com.github.signer4j.progress.IStageEvent;
-import com.github.signer4j.progress.IState;
+import com.github.progress4j.IStageEvent;
+import com.github.progress4j.IState;
 
 class StageEvent extends Event implements IStageEvent {
 

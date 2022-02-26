@@ -1,12 +1,12 @@
-package com.github.signer4j.progress.imp;
+package com.github.progress4j.imp;
 
 import java.awt.Image;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.github.signer4j.progress.IProgressFactory;
-import com.github.signer4j.progress.IProgressView;
+import com.github.progress4j.IProgressFactory;
+import com.github.progress4j.IProgressView;
 
 import io.reactivex.disposables.Disposable;
 

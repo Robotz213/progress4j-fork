@@ -1,4 +1,4 @@
-package com.github.signer4j.progress.imp;
+package com.github.progress4j.imp;
 
 import java.awt.Image;
 import java.awt.Toolkit;

@@ -1,6 +1,6 @@
-package com.github.signer4j.progress;
+package com.github.progress4j;
 
-import com.github.signer4j.progress.imp.ProgressFactory;
+import com.github.progress4j.imp.ProgressFactory;
 import com.github.utils4j.imp.Threads;
 
 public class TestSample {

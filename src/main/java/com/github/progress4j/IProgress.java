@@ -1,4 +1,4 @@
-package com.github.signer4j.progress;
+package com.github.progress4j;
 
 import java.util.function.Consumer;
 

@@ -1,4 +1,4 @@
-package com.github.signer4j.progress.imp;
+package com.github.progress4j.imp;
 
 import static com.github.utils4j.imp.Strings.computeTabs;
 import static com.github.utils4j.imp.SwingTools.invokeLater;
@@ -34,9 +34,9 @@ import javax.swing.border.EtchedBorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.signer4j.progress.ICanceller;
-import com.github.signer4j.progress.IStageEvent;
-import com.github.signer4j.progress.IStepEvent;
+import com.github.progress4j.ICanceller;
+import com.github.progress4j.IStageEvent;
+import com.github.progress4j.IStepEvent;
 import com.github.utils4j.imp.Args;
 import com.github.utils4j.imp.SimpleFrame;
 import com.github.utils4j.imp.Stack;
