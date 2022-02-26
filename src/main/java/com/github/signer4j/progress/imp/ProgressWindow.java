@@ -219,7 +219,7 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
       }
       this.progressBar.setString(message);
       textArea.append(text + "\n\r");
-      if (e.isEnd())
+      if (e.isEnd() && !this.stackState.isEmpty())
         this.stackState.pop().restore(this.progressBar);
     });    
   }
