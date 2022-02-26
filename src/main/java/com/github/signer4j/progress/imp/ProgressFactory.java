@@ -5,9 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.ImageIcon;
-
-//import com.github.signer4j.imp.Config;
 import com.github.signer4j.progress.IProgressFactory;
 import com.github.signer4j.progress.IProgressView;
 
@@ -17,25 +14,19 @@ public class ProgressFactory implements IProgressFactory {
 
   private Map<String, Entry> steps = Collections.synchronizedMap(new HashMap<>());
   
-  private Image icon;
-  private ImageIcon logIcon;
+  private Image windowIcon;
   
   public ProgressFactory() {
     this(Images.PROGRESS_ICON.asImage());
   }
   
-  public ProgressFactory(Image icon) {
-    this(icon, Images.LOG.asIcon());
-  }
-
-  public ProgressFactory(Image icon, ImageIcon logIcon) {
-    this.icon = icon;
-    this.logIcon = logIcon;
+  public ProgressFactory(Image windowIcon) {
+    this.windowIcon = windowIcon;
   }
   
   @Override
   public IProgressView get() {
-    StepProgress sp =  new StepProgress(icon, logIcon);
+    StepProgress sp =  new StepProgress(windowIcon);
     steps.put(sp.getName(), new Entry(sp, sp.disposeObservable().subscribe(p -> steps.remove(p.getName()).token.dispose())));
     return sp;
   }

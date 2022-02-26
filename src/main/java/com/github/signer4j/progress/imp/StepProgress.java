@@ -2,8 +2,6 @@ package com.github.signer4j.progress.imp;
 
 import java.awt.Image;
 
-import javax.swing.ImageIcon;
-
 import com.github.signer4j.progress.IProgressView;
 import com.github.utils4j.imp.Args;
 import com.github.utils4j.imp.Ids;
@@ -16,13 +14,13 @@ class StepProgress extends ProgressWrapper implements IProgressView {
   
   private Disposable stepToken, stageToken; 
   
-  protected StepProgress(Image icon, ImageIcon log) {
-    this(Ids.next("progress-"), icon, log);
+  protected StepProgress(Image windowsIcon) {
+    this(Ids.next("progress-"), windowsIcon);
   }
   
-  protected StepProgress(String name, Image icon, ImageIcon log) {
+  protected StepProgress(String name, Image windowsIcon) {
     super(new DefaultProgress(name));
-    this.window = new ProgressWindow(icon, log);
+    this.window = new ProgressWindow(windowsIcon, Images.LOG.asIcon());
     this.attach();
   }
 

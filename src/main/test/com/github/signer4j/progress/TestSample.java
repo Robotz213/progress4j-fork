@@ -20,7 +20,7 @@ public class TestSample {
           Threads.sleep(100);
         }
         progress.end();
-        Threads.sleep(2000);
+        Threads.sleep(100);
       }catch(Exception e) {
         e.printStackTrace();
       }finally {
