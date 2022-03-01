@@ -4,6 +4,7 @@ import java.awt.Image;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import com.github.progress4j.IProgressFactory;
 import com.github.progress4j.IProgressView;
@@ -17,7 +18,7 @@ public class ProgressFactory implements IProgressFactory {
   private Image windowIcon;
   
   public ProgressFactory() {
-    this(Images.PROGRESS_ICON.asImage());
+    this(Images.PROGRESS_ICON.asImage().orElse(null));
   }
   
   public ProgressFactory(Image windowIcon) {

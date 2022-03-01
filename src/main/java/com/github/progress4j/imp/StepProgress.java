@@ -1,6 +1,7 @@
 package com.github.progress4j.imp;
 
 import java.awt.Image;
+import java.util.Optional;
 
 import com.github.progress4j.IProgressView;
 import com.github.utils4j.imp.Args;
@@ -20,7 +21,7 @@ class StepProgress extends ProgressWrapper implements IProgressView {
   
   protected StepProgress(String name, Image windowsIcon) {
     super(new DefaultProgress(name));
-    this.window = new ProgressWindow(windowsIcon, Images.LOG.asIcon());
+    this.window = new ProgressWindow(windowsIcon, Images.LOG.asIcon().orElse(null));
     this.attach();
   }
 

@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -56,11 +57,11 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
   private final Stack<ProgressState> stackState = new Stack<>();
   
   ProgressWindow() {
-    this(Images.PROGRESS_ICON.asImage());
+    this(Images.PROGRESS_ICON.asImage().orElse(null));
   }
   
   ProgressWindow(Image icon) {
-    this(icon, Images.LOG.asIcon());
+    this(icon, Images.LOG.asIcon().orElse(null));
   }
 
   ProgressWindow(Image icon, ImageIcon log) {
