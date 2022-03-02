@@ -4,7 +4,6 @@ import java.awt.Image;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import com.github.progress4j.IProgressFactory;
 import com.github.progress4j.IProgressView;

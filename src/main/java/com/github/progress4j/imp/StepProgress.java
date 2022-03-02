@@ -1,7 +1,6 @@
 package com.github.progress4j.imp;
 
 import java.awt.Image;
-import java.util.Optional;
 
 import com.github.progress4j.IProgressView;
 import com.github.utils4j.imp.Args;

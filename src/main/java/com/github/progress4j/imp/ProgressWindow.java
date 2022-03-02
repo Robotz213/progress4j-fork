@@ -307,7 +307,6 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
     }
   }
   
-  
   public static void main(String[] args) {
     SwingTools.invokeLater(() -> new ProgressWindow().reveal());
   }
