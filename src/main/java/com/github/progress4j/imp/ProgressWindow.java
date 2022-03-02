@@ -2,6 +2,7 @@ package com.github.progress4j.imp;
 
 import static com.github.utils4j.imp.Strings.computeTabs;
 import static com.github.utils4j.imp.SwingTools.invokeLater;
+import static com.github.utils4j.imp.SwingTools.setFixedMinimumSize;
 import static com.github.utils4j.imp.Throwables.tryRun;
 import static java.lang.String.format;
 
@@ -13,8 +14,6 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -40,14 +39,13 @@ import org.slf4j.LoggerFactory;
 import com.github.progress4j.ICanceller;
 import com.github.progress4j.IStageEvent;
 import com.github.progress4j.IStepEvent;
+import com.github.utils4j.gui.imp.SimpleFrame;
 import com.github.utils4j.imp.Args;
-import com.github.utils4j.imp.SimpleFrame;
 import com.github.utils4j.imp.Stack;
 import com.github.utils4j.imp.SwingTools;
 
 import net.miginfocom.swing.MigLayout;
 
-@SuppressWarnings("serial")
 class ProgressWindow extends SimpleFrame implements ICanceller {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ProgressWindow.class);  
@@ -89,24 +87,10 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
     contentPane.add(south(), BorderLayout.SOUTH);
 
     resetProgress();
-    setMinimumWindowDimension();
+    setFixedMinimumSize(this, new Dimension(MIN_WIDTH, MIN_HEIGHT));
     setContentPane(contentPane);
     setLocationRelativeTo(null);
     setAutoRequestFocus(true);
-  }
-
-  private void setMinimumWindowDimension() {
-    setMinimumSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
-    addComponentListener(new ComponentAdapter() {
-      @Override
-      public void componentResized(ComponentEvent e) {
-        Dimension windowDimension = ProgressWindow.this.getSize();
-        Dimension minimumDimension = ProgressWindow.this.getMinimumSize();
-        windowDimension.width = Math.max(windowDimension.width, minimumDimension.width);
-        windowDimension.height =  Math.max(windowDimension.height, minimumDimension.height);
-        ProgressWindow.this.setSize(windowDimension);
-      }
-    });    
   }
 
   private JPanel south() {

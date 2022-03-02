@@ -1,6 +1,6 @@
 package com.github.progress4j.imp;
 
-import com.github.utils4j.imp.IPicture;
+import com.github.utils4j.gui.IPicture;
 
 public enum Images implements IPicture {
   PROGRESS_ICON("/progress.png"),
