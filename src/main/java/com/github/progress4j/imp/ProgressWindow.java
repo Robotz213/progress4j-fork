@@ -1,7 +1,7 @@
 package com.github.progress4j.imp;
 
-import static com.github.cutplayer4j.gui.imp.SwingTools.invokeLater;
-import static com.github.cutplayer4j.gui.imp.SwingTools.setFixedMinimumSize;
+import static com.github.utils4j.gui.imp.SwingTools.invokeLater;
+import static com.github.utils4j.gui.imp.SwingTools.setFixedMinimumSize;
 import static com.github.utils4j.imp.Strings.computeTabs;
 import static com.github.utils4j.imp.Throwables.tryRun;
 import static java.lang.String.format;
@@ -36,11 +36,11 @@ import javax.swing.border.EtchedBorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.cutplayer4j.gui.imp.SwingTools;
 import com.github.progress4j.IStageEvent;
 import com.github.progress4j.IStepEvent;
 import com.github.utils4j.ICanceller;
 import com.github.utils4j.gui.imp.SimpleFrame;
+import com.github.utils4j.gui.imp.SwingTools;
 import com.github.utils4j.imp.Args;
 import com.github.utils4j.imp.Stack;
 
