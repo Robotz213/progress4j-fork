@@ -36,9 +36,9 @@ import javax.swing.border.EtchedBorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.progress4j.ICanceller;
 import com.github.progress4j.IStageEvent;
 import com.github.progress4j.IStepEvent;
+import com.github.utils4j.ICanceller;
 import com.github.utils4j.gui.imp.SimpleFrame;
 import com.github.utils4j.imp.Args;
 import com.github.utils4j.imp.Stack;
