@@ -197,6 +197,7 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
     });
   }
 
+  private long lineNumber = 0;
   final void stepToken(IStepEvent e) {
     final int step = e.getStep();
     final int total = e.getTotal();
@@ -214,14 +215,18 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
       if (!indeterminated) {
         progressBar.setValue(step);
       }
+      if (lineNumber++ > 800) {
+        textArea.setText(""); //auto clean
+        lineNumber = 0;
+      }
       textArea.append(log + "\n\r");
     });
   }
   
   final void stageToken(IStageEvent e) {
-    final String tabSize = computeTabs(e.getStackSize());
+    final StringBuilder tabSize = computeTabs(e.getStackSize());
     final String message = e.getMessage();
-    final String text = tabSize + message;
+    final String text = tabSize.append(message).toString();
     LOGGER.info(text);
     invokeLater(() -> {
       if (!e.isEnd())
