@@ -75,7 +75,7 @@ public class DefaultProgress implements IProgress {
     if (advance) {
       currentState.incrementAndGet();
     }
-    notifyStep(currentState, String.format(message, args));
+    notifyStep(currentState, String.format(message, args), !advance);
   }
   
   @Override
@@ -101,7 +101,7 @@ public class DefaultProgress implements IProgress {
     if (stack.isEmpty() || (currentState = stack.peek()).isAborted())
       return e;
     String message = e.getMessage() + ". Causa: " + Throwables.rootString(e); 
-    notifyStep(currentState.abort(e), message);
+    notifyStep(currentState.abort(e), message, true);
     message = currentState.getStage().endString() + " abortado em " + currentState.getTime() + "ms";
     notifyStage(currentState, message, true);
     return e;
@@ -143,8 +143,8 @@ public class DefaultProgress implements IProgress {
     }
   }
   
-  private void notifyStep(IState state, String message) {
-    this.stepSubject.onNext(new StepEvent(state, message, this.stack.size()));
+  private void notifyStep(IState state, String message, boolean info) {
+    this.stepSubject.onNext(new StepEvent(state, message, this.stack.size(), info));
   }
 
   private void notifyStage(IState state, String message, boolean end) {

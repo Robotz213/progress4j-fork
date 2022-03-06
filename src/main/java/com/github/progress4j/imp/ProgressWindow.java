@@ -204,7 +204,7 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
     final String message = e.getMessage();
     final StringBuilder text = new StringBuilder(computeTabs(e.getStackSize()));
     final String log;
-    if (indeterminated) {
+    if (indeterminated || e.isInfo()){
       log = text.append(message).toString();
     } else {
       log = text.append(format("Passo %s de %s: %s", step, total, message)).toString();
