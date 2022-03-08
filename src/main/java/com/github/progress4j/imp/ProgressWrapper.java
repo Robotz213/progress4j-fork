@@ -7,6 +7,7 @@ import com.github.progress4j.IStage;
 import com.github.progress4j.IStageEvent;
 import com.github.progress4j.IState;
 import com.github.progress4j.IStepEvent;
+import com.github.utils4j.imp.Args;
 
 import io.reactivex.Observable;
 
@@ -15,7 +16,7 @@ public class ProgressWrapper implements IProgress {
   protected final IProgress progress;
   
   protected ProgressWrapper(IProgress progress) {
-    this.progress = progress;
+    this.progress = Args.requireNonNull(progress, "progress is null");
   }
   
   @Override
