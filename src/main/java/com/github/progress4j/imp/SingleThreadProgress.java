@@ -11,19 +11,19 @@ import com.github.utils4j.imp.Args;
 
 import io.reactivex.Observable;
 
-public class ThreadOwnerProgress extends ProgressWrapper {
+public class SingleThreadProgress extends ProgressWrapper {
   
   public static IProgress wrap(IProgress progress) {
-    return new ThreadOwnerProgress(progress);
+    return new SingleThreadProgress(progress);
   }
   
   private final Thread progressOwner;
   
-  private ThreadOwnerProgress(IProgress progress) {
+  private SingleThreadProgress(IProgress progress) {
     this(progress, Thread.currentThread());
   }
   
-  private ThreadOwnerProgress(IProgress progress, Thread progressOwner) {
+  private SingleThreadProgress(IProgress progress, Thread progressOwner) {
     super(progress);
     this.progressOwner = Args.requireNonNull(progressOwner, "progressOwner is null");
   }
