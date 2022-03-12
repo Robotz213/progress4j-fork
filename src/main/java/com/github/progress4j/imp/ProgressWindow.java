@@ -40,7 +40,6 @@ import com.github.progress4j.IStageEvent;
 import com.github.progress4j.IStepEvent;
 import com.github.utils4j.ICanceller;
 import com.github.utils4j.gui.imp.SimpleFrame;
-import com.github.utils4j.gui.imp.SwingTools;
 import com.github.utils4j.imp.Args;
 import com.github.utils4j.imp.Stack;
 
@@ -297,7 +296,7 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
   }
   
   public static void main(String[] args) {
-    SwingTools.invokeLater(() -> new ProgressWindow().reveal());
+    invokeLater(() -> new ProgressWindow().reveal());
   }
 }
 
