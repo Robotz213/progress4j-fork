@@ -202,7 +202,7 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
     final int total = e.getTotal();
     final boolean indeterminated = e.isIndeterminated();
     final String message = e.getMessage();
-    final StringBuilder text = new StringBuilder(computeTabs(e.getStackSize()));
+    final StringBuilder text = computeTabs(e.getStackSize());
     final String log;
     if (indeterminated || e.isInfo()){
       log = text.append(message).toString();
@@ -228,7 +228,7 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
     final String text = tabSize.append(message).toString();
     LOGGER.info(text);
     invokeLater(() -> {
-      if (!e.isEnd())
+      if (e.isStart())
         this.stackState.push(new ProgressState(this.progressBar));
       final boolean indeterminated = e.isIndeterminated();
       progressBar.setIndeterminate(indeterminated);
