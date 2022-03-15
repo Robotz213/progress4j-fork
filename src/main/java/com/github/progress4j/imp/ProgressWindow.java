@@ -144,7 +144,7 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
       seeDetailsPane.setText("<html><u>Esconder detalhes</u></html>");
     }else {
       currentHeight = Math.max(getBounds().height, MIN_DETAIL_HEIGHT);
-      setBounds(getBounds().x, getBounds().y, getBounds().width, 154);
+      setBounds(getBounds().x, getBounds().y, getBounds().width, MIN_HEIGHT);
       seeDetailsPane.setText("<html><u>Ver detalhes</u></html>");
     }
     southPane.setVisible(show);

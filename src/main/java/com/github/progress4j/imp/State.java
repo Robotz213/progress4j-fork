@@ -114,7 +114,7 @@ class State implements IState {
     if (abortCause != null) {
       builder.append(", ");
       builder.append("abortCause:\n");
-      builder.append(Throwables.rootString(abortCause));
+      builder.append(Throwables.traceRoot(abortCause));
     }
     builder.append("]");
     return builder.toString();
