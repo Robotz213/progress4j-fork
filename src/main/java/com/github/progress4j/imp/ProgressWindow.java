@@ -48,22 +48,22 @@ import net.miginfocom.swing.MigLayout;
 class ProgressWindow extends SimpleFrame implements ICanceller {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ProgressWindow.class);  
-
-  private static final int MIN_DETAIL_HEIGHT = 312; 
   
   private static final int MIN_WIDTH = 450;
   
   private static final int MIN_HEIGHT = 154;
   
+  private static final int MIN_DETAIL_HEIGHT = 312; 
+
+  private final JPanel southPane = new JPanel();
+
   private final JTextArea textArea = new JTextArea();
   
   private final JProgressBar progressBar = new JProgressBar();
   
-  private final JPanel southPane = new JPanel();
-  
-  private final Map<Thread, List<Runnable>> cancels = new HashMap<>(2);
-  
   private final Stack<ProgressState> stackState = new Stack<>();
+
+  private final Map<Thread, List<Runnable>> cancels = new HashMap<>(2);  
   
   private int currentHeight = MIN_DETAIL_HEIGHT;
   
@@ -76,20 +76,22 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
   }
 
   ProgressWindow(Image icon, ImageIcon log) {
-    super("Progresso", icon);
-    final JPanel contentPane = new JPanel();
-    
+    super("Progresso", icon);    
+    setFixedMinimumSize(this, new Dimension(MIN_WIDTH, MIN_HEIGHT));
+    setupLayout(log);
+    resetProgress();
+    setLocationRelativeTo(null);
+    setAutoRequestFocus(true);
+  }
+
+  private void setupLayout(ImageIcon log) {
+    JPanel contentPane = new JPanel();    
     contentPane.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
     contentPane.setLayout(new BorderLayout(0, 0));
     contentPane.add(north(log), BorderLayout.NORTH);
     contentPane.add(center(), BorderLayout.CENTER);
     contentPane.add(south(), BorderLayout.SOUTH);
-
-    resetProgress();
-    setFixedMinimumSize(this, new Dimension(MIN_WIDTH, MIN_HEIGHT));
     setContentPane(contentPane);
-    setLocationRelativeTo(null);
-    setAutoRequestFocus(true);
   }
 
   private JPanel south() {
@@ -191,8 +193,7 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
 
   final void unreveal() {
     invokeLater(() -> {
-      this.setVisible(false);
-      this.resetProgress();
+      this.setVisible(false);      
     });
   }
 
