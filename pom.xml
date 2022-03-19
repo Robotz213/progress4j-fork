@@ -6,7 +6,7 @@
 
   <groupId>com.github</groupId>
   <artifactId>progress4j</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0</version>
 
   <name>progress4j</name>
   <!-- FIXME change it to the project's website -->
@@ -43,6 +43,12 @@
 	    <groupId>com.miglayout</groupId>
 	    <artifactId>miglayout</artifactId>
 	    <version>3.7.4</version>
+	</dependency>
+	
+	<dependency>
+	  	<groupId>com.github</groupId>
+  		<artifactId>utils4j</artifactId>
+  		<version>1.0</version>
 	</dependency>
 
   </dependencies>
