@@ -100,7 +100,7 @@ public class DefaultProgress implements IProgress {
     State currentState;
     if (stack.isEmpty() || (currentState = stack.peek()).isAborted())
       return e;
-    String message = e.getMessage() + ". Causa: " + Throwables.traceRoot(e); 
+    String message = e.getMessage() + ". Causa: " + Throwables.rootTrace(e); 
     notifyStep(currentState.abort(e), message, true);
     message = currentState.getStage().endString() + " abortado em " + currentState.getTime() + "ms";
     notifyStage(currentState, message, true);
