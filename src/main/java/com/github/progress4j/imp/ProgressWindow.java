@@ -25,7 +25,6 @@ import java.util.Map;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
@@ -39,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import com.github.progress4j.IStageEvent;
 import com.github.progress4j.IStepEvent;
 import com.github.utils4j.ICanceller;
+import com.github.utils4j.gui.imp.Dialogs;
 import com.github.utils4j.gui.imp.SimpleFrame;
 import com.github.utils4j.imp.Args;
 import com.github.utils4j.imp.Stack;
@@ -158,12 +158,12 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
   
   @Override
   protected void onEscPressed(ActionEvent e) {
-    int option = JOptionPane.showConfirmDialog(null, 
-      "Deseja mesmo cancelar a operação?", 
+    boolean cancell = Dialogs.getBoolean(
+      "Deseja mesmo cancelar a operação?",
       "Cancelamento da operação", 
-      JOptionPane.YES_NO_OPTION
+      false
     );
-    if (option == JOptionPane.YES_OPTION) {
+    if (cancell) {
       this.cancel();
       this.unreveal();
     }
