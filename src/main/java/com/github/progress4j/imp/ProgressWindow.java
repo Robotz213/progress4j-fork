@@ -68,6 +68,7 @@ import com.github.utils4j.ICanceller;
 import com.github.utils4j.gui.imp.Dialogs;
 import com.github.utils4j.gui.imp.SimpleFrame;
 import com.github.utils4j.imp.Args;
+import com.github.utils4j.imp.Booleans;
 import com.github.utils4j.imp.Stack;
 
 import net.miginfocom.swing.MigLayout;
@@ -123,9 +124,9 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
 
   private JPanel south() {
     JButton btnLimpar = new JButton("Limpar");
-    btnLimpar.addActionListener((e) -> onClear(e));
+    btnLimpar.addActionListener(this::onClear);
     JButton cancelButton = new JButton("Cancelar");
-    cancelButton.addActionListener((e) -> onEscPressed(e));
+    cancelButton.addActionListener(this::onEscPressed);
     southPane.setLayout(new MigLayout("fillx", "push[][]", "[][]"));
     southPane.add(btnLimpar);
     southPane.add(cancelButton);
@@ -185,12 +186,12 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
   
   @Override
   protected void onEscPressed(ActionEvent e) {
-    boolean cancell = Dialogs.getBoolean(
+    Boolean cancell = Dialogs.getBoolean(
       "Deseja mesmo cancelar a operação?",
       "Cancelamento da operação", 
       false
     );
-    if (cancell) {
+    if (Booleans.isTrue(cancell, false)) {
       this.cancel();
       this.unreveal();
     }

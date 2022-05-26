@@ -84,13 +84,9 @@ class StepProgress extends ProgressWrapper implements IProgressView {
   } 
 
   private void attach() {
-    cancelCode(() -> {}); //add current thread is very important!
-    stepToken = progress.stepObservable().subscribe(e -> {
-      this.window.stepToken(e);
-    });
-    stageToken = progress.stageObservable().subscribe(e -> {
-      this.window.stageToken(e);
-    });
+    cancelCode(() -> {}); //add current thread is very important!    
+    stepToken = progress.stepObservable().subscribe(window::stepToken); //link stepToken
+    stageToken = progress.stageObservable().subscribe(window::stageToken); //link stageToken
   }
 
   @Override
