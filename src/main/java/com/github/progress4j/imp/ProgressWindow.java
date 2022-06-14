@@ -43,6 +43,8 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -51,6 +53,7 @@ import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -68,7 +71,6 @@ import com.github.utils4j.ICanceller;
 import com.github.utils4j.gui.imp.Dialogs;
 import com.github.utils4j.gui.imp.SimpleFrame;
 import com.github.utils4j.imp.Args;
-import com.github.utils4j.imp.Booleans;
 import com.github.utils4j.imp.Stack;
 
 import net.miginfocom.swing.MigLayout;
@@ -120,6 +122,12 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
     contentPane.add(center(), BorderLayout.CENTER);
     contentPane.add(south(), BorderLayout.SOUTH);
     setContentPane(contentPane);
+    setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+    addWindowListener(new WindowAdapter() {
+      public void windowClosing(WindowEvent windowEvent) {        
+        onEscPressed(null);
+      }
+    });
   }
 
   private JPanel south() {
@@ -186,12 +194,12 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
   
   @Override
   protected void onEscPressed(ActionEvent e) {
-    Boolean cancell = Dialogs.getBoolean(
+    Dialogs.Choice choice = Dialogs.getBoolean(
       "Deseja mesmo cancelar a operação?",
       "Cancelamento da operação", 
       false
     );
-    if (Booleans.isTrue(cancell, false)) {
+    if (choice == Dialogs.Choice.YES) {
       this.cancel();
       this.unreveal();
     }
