@@ -89,6 +89,8 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
 
   private final JTextArea textArea = new JTextArea();
   
+  private final JScrollPane centerPane = new JScrollPane();
+  
   private final JProgressBar progressBar = new JProgressBar();
   
   private final Stack<ProgressState> stackState = new Stack<>();
@@ -145,8 +147,8 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
   private JScrollPane center() {
     textArea.setRows(8);
     textArea.setEditable(false);
-    JScrollPane centerPane = new JScrollPane();
     centerPane.setViewportView(textArea);
+    centerPane.setVisible(false);
     return centerPane;
   }
 
@@ -185,6 +187,7 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
       setBounds(getBounds().x, getBounds().y, getBounds().width, MIN_HEIGHT);
       seeDetailsPane.setText("<html><u>Ver detalhes</u></html>");
     }
+    centerPane.setVisible(show);
     southPane.setVisible(show);
   }
   

@@ -40,7 +40,7 @@ public class TestSample {
       IProgressView progress = f.get();
       progress.display();
       try {
-        int total = 200;
+        int total = 600;
         progress.begin(Stage.PROCESSING, total);
         for(int i = 1; i <= total; i++) {
           progress.step("Operação  " + i);
