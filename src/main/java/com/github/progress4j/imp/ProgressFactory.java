@@ -71,12 +71,14 @@ public class ProgressFactory implements IProgressFactory {
   }
   
   private static class Entry {
-    public final IProgressView progress;
+    public final StepProgress progress;
     public final Disposable token;
     
-    private Entry(IProgressView progress, Disposable token) {
+    private Entry(StepProgress progress, Disposable token) {
       this.progress = progress;
       this.token = token;
     }
   }
+
+
 }
