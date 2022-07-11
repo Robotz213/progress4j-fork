@@ -88,6 +88,16 @@ public class DefaultProgress implements IProgress {
   public final void step(String message, Object... args) throws InterruptedException {
     send(true, message, args);
   }
+  
+  @Override
+  public final void skip(long steps) throws InterruptedException {
+    checkInterrupted();
+    State currentState;
+    if (stack.isEmpty() || (currentState = stack.peek()).isAborted())
+      return;
+    currentState.incrementAndGet(steps);
+    notifyStep(currentState, "Skip", false);
+  }
 
   @Override
   public final void info(String message, Object... args) throws InterruptedException {
@@ -100,7 +110,7 @@ public class DefaultProgress implements IProgress {
     if (stack.isEmpty() || (currentState = stack.peek()).isAborted())
       return;
     if (advance) {
-      currentState.incrementAndGet();
+      currentState.incrementAndGet(1);
     }
     notifyStep(currentState, String.format(message, args), !advance);
   }

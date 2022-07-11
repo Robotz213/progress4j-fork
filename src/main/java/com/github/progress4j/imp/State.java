@@ -70,10 +70,10 @@ class State implements IState {
     return this.abortCause;
   }
   
-  public final long incrementAndGet() { 
+  public final long incrementAndGet(long steps) {
     if (isAborted())
       return -1; //lock increment if aborted!
-    if(++step > total && total > 0) {
+    if((step += steps) > total && total > 0) {
       stopWatch.getLogger().warn(
         "Stage {} tem mais passos que o total. Step: {}, Total: {} ", 
         new Object[]{
@@ -86,7 +86,7 @@ class State implements IState {
     }
     return step;
   }
-  
+
   @Override
   public final int getTotal() {
     return total;
@@ -146,5 +146,4 @@ class State implements IState {
     builder.append("]");
     return builder.toString();
   }
-
 }

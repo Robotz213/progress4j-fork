@@ -33,6 +33,8 @@ public interface IQuietlyProgress extends IProgress {
   void begin(IStage stage, int total);
   
   void step(String mensagem, Object... params);
+  
+  void skip(long steps);
 
   void info(String mensagem, Object... params);
   

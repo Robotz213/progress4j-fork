@@ -122,4 +122,9 @@ public class ProgressWrapper implements IProgress {
   public Throwable getAbortCause() {
     return progress.getAbortCause();
   }
+
+  @Override
+  public void skip(long steps) throws InterruptedException {
+    progress.skip(steps);
+  }
 }

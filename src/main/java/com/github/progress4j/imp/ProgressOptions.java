@@ -127,4 +127,8 @@ public enum ProgressOptions implements IProgressView {
   public void info(String mensagem, Object... params) throws InterruptedException {
     
   }
+
+  @Override
+  public void skip(long steps) throws InterruptedException {
+  }
 }

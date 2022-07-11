@@ -59,6 +59,11 @@ public class QuietlyProgress extends ProgressWrapper implements IQuietlyProgress
   }
   
   @Override
+  public void skip(long steps) {
+    tryRun(() -> progress.skip(steps));
+  }
+  
+  @Override
   public void info(String mensagem, Object... params) {
     tryRun(() -> progress.info(mensagem, params));
   }

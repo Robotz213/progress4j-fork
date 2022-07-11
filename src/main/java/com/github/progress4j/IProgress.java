@@ -46,6 +46,8 @@ public interface IProgress extends IDisposable {
   void begin(IStage stage, int total) throws InterruptedException;
   
   void step(String mensagem, Object... params) throws InterruptedException;
+  
+  void skip(long steps) throws InterruptedException;
 
   void info(String mensagem, Object... params) throws InterruptedException;
 
