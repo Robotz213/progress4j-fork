@@ -133,10 +133,11 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
   }
 
   private JPanel south() {
-    JButton btnLimpar = new JButton("Limpar");
-    btnLimpar.addActionListener(this::onClear);
     JButton cancelButton = new JButton("Cancelar");
     cancelButton.addActionListener(this::onEscPressed);
+    JButton btnLimpar = new JButton("Limpar");
+    btnLimpar.setPreferredSize(cancelButton.getPreferredSize());
+    btnLimpar.addActionListener(this::onClear);    
     southPane.setLayout(new MigLayout("fillx", "push[][]", "[][]"));
     southPane.add(btnLimpar);
     southPane.add(cancelButton);
