@@ -65,7 +65,6 @@ class StepProgress extends ProgressWrapper implements IProgressView {
   public void dispose() {
     super.dispose();
     this.disposeTokens();
-    this.window.cancel();
     this.window.exit();
   }
   

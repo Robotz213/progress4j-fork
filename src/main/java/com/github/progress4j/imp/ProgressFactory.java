@@ -55,7 +55,7 @@ public class ProgressFactory implements IProgressFactory {
   public IProgressView get() {
     StepProgress sp =  new StepProgress(windowIcon);
     steps.put(sp.getName(), new Entry(sp, sp.disposeObservable().subscribe(p -> steps.remove(p.getName()).token.dispose())));
-    return sp;
+    return sp; 
   }
 
   public void display() {
@@ -79,6 +79,4 @@ public class ProgressFactory implements IProgressFactory {
       this.token = token;
     }
   }
-
-
 }
