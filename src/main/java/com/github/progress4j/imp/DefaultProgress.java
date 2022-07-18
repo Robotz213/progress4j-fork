@@ -37,6 +37,7 @@ import com.github.progress4j.IStepEvent;
 import com.github.utils4j.imp.Args;
 import com.github.utils4j.imp.Ids;
 import com.github.utils4j.imp.Stack;
+import com.github.utils4j.imp.Strings;
 import com.github.utils4j.imp.Throwables;
 
 import io.reactivex.Observable;
@@ -134,10 +135,11 @@ public class DefaultProgress implements IProgress {
 
   @Override
   public final <T extends Throwable> T abort(T e) {
+    Args.requireNonNull(e,  "e is null");
     State currentState;
     if (stack.isEmpty() || (currentState = stack.peek()).isAborted())
       return e;
-    String message = e.getMessage() + ". Causa: " + Throwables.rootTrace(e); 
+    String message = Strings.trim(e.getMessage()) + ". Causa: " + Throwables.rootTrace(e); 
     notifyStep(currentState.abort(e), message, true);
     message = currentState.getStage().endString() + " abortado em " + currentState.getTime() + "ms";
     notifyStage(currentState, message, true);
