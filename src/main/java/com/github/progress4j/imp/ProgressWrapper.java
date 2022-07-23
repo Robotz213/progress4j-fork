@@ -52,6 +52,16 @@ public class ProgressWrapper implements IProgress {
   }
 
   @Override
+  public void begin(String stage) throws InterruptedException {
+    progress.begin(stage);
+  }
+
+  @Override
+  public void begin(String stage, int total) throws InterruptedException {
+    progress.begin(stage, total);
+  }
+  
+  @Override
   public void begin(IStage stage) throws InterruptedException {
     progress.begin(stage);
   }

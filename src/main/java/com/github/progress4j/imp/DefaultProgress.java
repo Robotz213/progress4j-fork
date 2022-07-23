@@ -72,6 +72,16 @@ public class DefaultProgress implements IProgress {
   }
   
   @Override
+  public void begin(String stage) throws InterruptedException {
+    begin(new Stage(stage));
+  }
+
+  @Override
+  public void begin(String stage, int total) throws InterruptedException {
+    begin(new Stage(stage), total);
+  }
+  
+  @Override
   public final void begin(IStage stage) throws InterruptedException {
     begin(stage, -1);
   }

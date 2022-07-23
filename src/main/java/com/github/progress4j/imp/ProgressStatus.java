@@ -18,15 +18,11 @@ public class ProgressStatus extends DownloadStatus {
   private final IProgress progress;
 
   public ProgressStatus(IProgress progress, IStage stage) {
-    this(progress, stage, true, null);
+    this(progress, stage, null);
   }
 
   public ProgressStatus(IProgress progress, IStage stage, File saveHere) {
-    this(progress, stage, true, saveHere);
-  }
-    
-  public ProgressStatus(IProgress progress, IStage stage, boolean rejectEmpty, File saveHere) {
-    super(rejectEmpty, saveHere);
+    super(true, saveHere);
     this.stage = Args.requireNonNull(stage, "stage is null");
     this.progress = Args.requireNonNull(progress, "progress is null");
   }  

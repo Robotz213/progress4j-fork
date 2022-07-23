@@ -130,4 +130,16 @@ public enum ProgressOptions implements IProgressView {
   @Override
   public void skip(long steps) throws InterruptedException {
   }
+
+  @Override
+  public void begin(String stage) throws InterruptedException {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void begin(String stage, int total) throws InterruptedException {
+    // TODO Auto-generated method stub
+    
+  }
 }
