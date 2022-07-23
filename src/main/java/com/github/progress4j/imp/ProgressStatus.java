@@ -22,7 +22,7 @@ public class ProgressStatus extends DownloadStatus {
   }
 
   public ProgressStatus(IProgress progress, IStage stage, File saveHere) {
-    super(true, saveHere);
+    super(false, saveHere);
     this.stage = Args.requireNonNull(stage, "stage is null");
     this.progress = Args.requireNonNull(progress, "progress is null");
   }  
