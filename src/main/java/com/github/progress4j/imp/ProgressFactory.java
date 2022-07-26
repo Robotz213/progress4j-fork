@@ -39,12 +39,12 @@ import io.reactivex.disposables.Disposable;
 
 public class ProgressFactory implements IProgressFactory {
 
-  private Map<String, Entry> steps = Collections.synchronizedMap(new HashMap<>());
+  private final Map<String, Entry> pool = Collections.synchronizedMap(new HashMap<>());
   
   private Image windowIcon;
   
   public ProgressFactory() {
-    this(Images.PROGRESS_ICON.asImage().orElse(null));
+    this(Images.PROGRESS_ICON.asImage());
   }
   
   public ProgressFactory(Image windowIcon) {
@@ -54,19 +54,19 @@ public class ProgressFactory implements IProgressFactory {
   @Override
   public IProgressView get() {
     StepProgress sp =  new StepProgress(windowIcon);
-    steps.put(sp.getName(), new Entry(sp, sp.disposeObservable().subscribe(p -> steps.remove(p.getName()).token.dispose())));
+    pool.put(sp.getName(), new Entry(sp, sp.disposeObservable().subscribe(p -> pool.remove(p.getName()).token.dispose())));
     return sp; 
   }
 
   public void display() {
-    synchronized(steps) {
-      steps.values().forEach(e -> e.progress.display());
+    synchronized(pool) {
+      pool.values().forEach(e -> e.progress.display());
     }
   }
   
   public void undisplay() {
-    synchronized(steps) {
-      steps.values().forEach(e -> e.progress.undisplay());
+    synchronized(pool) {
+      pool.values().forEach(e -> e.progress.undisplay());
     }
   }
   

@@ -34,10 +34,8 @@ import com.github.utils4j.IDisposable;
 import io.reactivex.Observable;
 
 public interface IProgress extends IDisposable {
-  
+
   String CANCELED_OPERATION_MESSAGE = "Operação cancelada!";
-  
-  String PARAM_NAME = IProgress.class.getSimpleName();
   
   String getName();
   

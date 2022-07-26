@@ -47,7 +47,7 @@ class StepProgress extends ProgressWrapper implements IProgressView {
   
   protected StepProgress(String name, Image windowsIcon) {
     super(new DefaultProgress(name));
-    this.window = new ProgressWindow(windowsIcon, Images.LOG.asIcon().orElse(null));
+    this.window = new ProgressWindow(windowsIcon, Images.LOG.asIcon());
     this.attach();
   }
 
@@ -91,7 +91,6 @@ class StepProgress extends ProgressWrapper implements IProgressView {
 
   @Override
   public void cancelCode(Runnable cancelCode) {
-    Args.requireNonNull(cancelCode, "cancelCode is null");
     this.window.cancelCode(cancelCode);
   }
 }
