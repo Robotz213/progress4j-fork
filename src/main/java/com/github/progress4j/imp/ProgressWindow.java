@@ -53,7 +53,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -76,8 +75,6 @@ import com.github.utils4j.gui.imp.Dialogs;
 import com.github.utils4j.gui.imp.SimpleFrame;
 import com.github.utils4j.imp.Args;
 import com.github.utils4j.imp.Stack;
-import com.github.utils4j.imp.Threads;
-import com.github.utils4j.imp.Throwables;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -279,9 +276,7 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
   }
 
   final void unreveal() {
-    invokeLater(() -> {
-      this.setVisible(false);      
-    });
+    invokeLater(() -> this.setVisible(false));
   }
 
   private long lineNumber = 0;
