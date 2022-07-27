@@ -1,5 +1,7 @@
 package com.github.progress4j.imp;
 
+import static com.github.utils4j.imp.Throwables.tryRun;
+
 import java.io.File;
 
 import com.github.progress4j.IProgress;
@@ -39,8 +41,8 @@ public class ProgressStatus extends DownloadStatus {
   }
   
   @Override
-  protected void onStepFail(Throwable e) throws InterruptedException {
-    onStepEnd();
+  protected void onStepFail(Throwable e) {
+    tryRun(this::onStepEnd);
   }
   
   @Override
