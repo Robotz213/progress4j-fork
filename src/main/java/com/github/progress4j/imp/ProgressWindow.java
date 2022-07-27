@@ -330,7 +330,8 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
   final synchronized void cancel() {
     Runnable interrupt = () -> {
       //A Event Dispatch Thread interrompe as demais e uma outra thread
-      //executa o código de finalização, liberando a thread de eventos.
+      //executa o código de finalização, liberando a thread de eventos
+      //o mais rápido possível!
       final List<Runnable> abort = cancelCodes.entrySet().stream()
         .peek(k -> {
           Thread key = k.getKey();
