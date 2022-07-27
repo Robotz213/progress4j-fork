@@ -25,37 +25,44 @@
 */
 
 
-package com.github.progress4j;
+package com.github.progress4j.imp;
 
-import com.github.progress4j.imp.SimpleProgressFactory;
-import com.github.utils4j.imp.Threads;
+import java.awt.Image;
 
-public class TestSample {
-  enum Stage implements IStage {
-    PROCESSING
+import com.github.progress4j.IProgressFactory;
+import com.github.progress4j.IProgressView;
+import com.github.utils4j.imp.SuppliedThreadLocal;
+
+public class ConcurrentProgressFactory implements IProgressFactory {  
+
+  private final IProgressFactory factory;
+
+  private final ThreadLocal<IProgressView> threadLocal;
+
+  public ConcurrentProgressFactory() {
+    this(Images.PROGRESS_ICON.asImage());
   }
-  public static void main(String[] args) throws InterruptedException {
-    SimpleProgressFactory f = new SimpleProgressFactory();
-    Thread t = new Thread(() -> {
-      IProgressView progress = f.get();
-      progress.display();
-      try {
-        int total = 600;
-        progress.begin(Stage.PROCESSING, total);
-        for(int i = 1; i <= total; i++) {
-          progress.step("Operação  " + i);
-          Threads.sleep(100);
-        }
-        progress.end();
-        Threads.sleep(100);
-      }catch(Exception e) {
-        e.printStackTrace();
-      }finally {
-        progress.undisplay();
-        progress.dispose();
-      }
-    });
-    t.start();
-    t.join();
+  
+  public ConcurrentProgressFactory(Image icon) {
+    this.factory = new ProgressFactoryDisposeNotifier(icon);
+    this.threadLocal = new SuppliedThreadLocal<>(factory::get);
+  }
+  
+  @Override
+  public IProgressView get() {
+    return threadLocal.get(); 
+  }
+
+  private class ProgressFactoryDisposeNotifier extends SimpleProgressFactory {
+    
+    ProgressFactoryDisposeNotifier(Image icon) {
+      super(icon);
+    }
+    
+    @Override
+    protected void onDisposed(IProgressView pv) {
+      threadLocal.remove();
+      super.onDisposed(pv);
+    }      
   }
 }

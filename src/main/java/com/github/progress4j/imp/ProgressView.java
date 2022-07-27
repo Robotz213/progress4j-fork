@@ -28,55 +28,68 @@
 package com.github.progress4j.imp;
 
 import java.awt.Image;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
-import com.github.progress4j.IProgressFactory;
 import com.github.progress4j.IProgressView;
+import com.github.utils4j.imp.Ids;
 
 import io.reactivex.disposables.Disposable;
 
-public class ProgressFactory implements IProgressFactory {
+class ProgressView extends ProgressWrapper implements IProgressView {
 
-  private final Map<String, Entry> pool = Collections.synchronizedMap(new HashMap<>());
+  private final ProgressWindow window;
   
-  private Image windowIcon;
+  private Disposable stepToken, stageToken; 
   
-  public ProgressFactory() {
-    this(Images.PROGRESS_ICON.asImage());
+  protected ProgressView(Image icon) {
+    this(Ids.next("progress-"), icon);
   }
   
-  public ProgressFactory(Image windowIcon) {
-    this.windowIcon = windowIcon;
+  protected ProgressView(String name, Image icon) {
+    super(new DefaultProgress(name));
+    this.window = new ProgressWindow(icon, Images.LOG.asIcon());
+    this.attach();
+  }
+
+  @Override
+  public void display() {
+    this.window.reveal();
+  }
+
+  @Override
+  public void undisplay() {
+    this.window.unreveal();
   }
   
   @Override
-  public IProgressView get() {
-    StepProgress sp =  new StepProgress(windowIcon);
-    pool.put(sp.getName(), new Entry(sp, sp.disposeObservable().subscribe(p -> pool.remove(p.getName()).token.dispose())));
-    return sp; 
+  public void dispose() {
+    super.dispose();
+    this.disposeTokens();
+    this.window.exit();
+  }
+  
+  @Override
+  public final IProgressView reset() {
+    super.reset();
+    this.window.cancel();
+    this.disposeTokens();
+    this.attach();
+    this.undisplay();
+    return this;
+  }
+  
+  private void disposeTokens() {
+    stepToken.dispose();
+    stageToken.dispose();
+  } 
+
+  private void attach() {
+    cancelCode(() -> {}); //add current thread is very important!    
+    stepToken = progress.stepObservable().subscribe(window::stepToken); //link stepToken
+    stageToken = progress.stageObservable().subscribe(window::stageToken); //link stageToken
   }
 
-  public void display() {
-    synchronized(pool) {
-      pool.values().forEach(e -> e.progress.display());
-    }
-  }
-  
-  public void undisplay() {
-    synchronized(pool) {
-      pool.values().forEach(e -> e.progress.undisplay());
-    }
-  }
-  
-  private static class Entry {
-    public final StepProgress progress;
-    public final Disposable token;
-    
-    private Entry(StepProgress progress, Disposable token) {
-      this.progress = progress;
-      this.token = token;
-    }
+  @Override
+  public void cancelCode(Runnable cancelCode) {
+    this.window.cancelCode(cancelCode);
   }
 }

@@ -80,6 +80,8 @@ import net.miginfocom.swing.MigLayout;
 
 class ProgressWindow extends SimpleFrame implements ICanceller {
 
+  private static final long serialVersionUID = 1L;
+
   private static final Logger LOGGER = LoggerFactory.getLogger(ProgressWindow.class);  
 
   private static final int MIN_DETAIL_HEIGHT = 312; 
@@ -228,7 +230,7 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
         currentHeight = MIN_DETAIL_HEIGHT;
       }
     } else if (show) {
-        setBounds(getBounds().x, getBounds().y, getBounds().width, currentHeight);
+      setBounds(getBounds().x, getBounds().y, getBounds().width, currentHeight);
     } else {
       currentHeight = Math.max(getBounds().height, MIN_DETAIL_HEIGHT);
       setBounds(getBounds().x, getBounds().y, getBounds().width, MININUM_SIZE.height);
@@ -283,9 +285,10 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
   final void stepToken(IStepEvent e) {
     final int step = e.getStep();
     final int total = e.getTotal();
-    final boolean indeterminated = e.isIndeterminated();
     final String message = e.getMessage();
+    final boolean indeterminated = e.isIndeterminated();
     final StringBuilder text = computeTabs(e.getStackSize());
+    
     final String log;
     if (indeterminated || e.isInfo()){
       log = text.append(message).toString();
@@ -330,7 +333,7 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
   final synchronized void cancel() {
     Runnable interrupt = () -> {
       //A Event Dispatch Thread interrompe as demais e uma outra thread
-      //executa o código de finalização, liberando a thread de eventos
+      //executa o código de cancelamento, liberando a thread de eventos
       //o mais rápido possível!
       final List<Runnable> abort = cancelCodes.entrySet().stream()
         .peek(k -> {
@@ -341,7 +344,8 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
           }
         })
         .map(k -> k.getValue())
-        .flatMap(Collection::stream).collect(toList());
+        .flatMap(Collection::stream)
+        .collect(toList());
       startAsync("canceling", () -> abort.forEach(r -> tryRun(r::run)));
       cancelCodes.clear();
     };
