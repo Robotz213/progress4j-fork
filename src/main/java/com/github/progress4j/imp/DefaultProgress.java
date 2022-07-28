@@ -116,7 +116,18 @@ public class DefaultProgress implements IProgress {
   }
 
   private void send(boolean advance, String message, Object... args) throws InterruptedException {
-    checkInterrupted();
+    checkInterrupted();    
+    if (stack.isEmpty())
+      return;
+    State currentState = stack.peek();    
+    if (advance) {
+      if (currentState.isAborted())
+        return;
+      currentState.incrementAndGet(1);
+    }
+    notifyStep(currentState, String.format(message, args), !advance);    
+    
+    /*checkInterrupted();
     State currentState;
     if (stack.isEmpty() || (currentState = stack.peek()).isAborted())
       return;
@@ -124,12 +135,13 @@ public class DefaultProgress implements IProgress {
       currentState.incrementAndGet(1);
     }
     notifyStep(currentState, String.format(message, args), !advance);
+    */
   }
   
   @Override
   public final void end() throws InterruptedException {
     checkInterrupted();
-    if (stack.isEmpty() || stack.peek().isAborted())
+    if (stack.isEmpty() /*|| stack.peek().isAborted()*/)
       return;
     State state = stack.pop();
     state.end();

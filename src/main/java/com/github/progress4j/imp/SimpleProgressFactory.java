@@ -42,7 +42,7 @@ public class SimpleProgressFactory implements IProgressFactory {
 
   private final Map<String, Pair<IProgressView, Disposable>> pool = Collections.synchronizedMap(new HashMap<>());
   
-  private Image icon;
+  private final Image icon;
   
   public SimpleProgressFactory() {
     this(Images.PROGRESS_ICON.asImage());
@@ -52,13 +52,13 @@ public class SimpleProgressFactory implements IProgressFactory {
     this.icon = icon;
   }
   
-  public void display() {
+  public final void display() {
     synchronized(pool) {
       pool.values().forEach(e -> e.getKey().display());
     }
   }
   
-  public void undisplay() {
+  public final void undisplay() {
     synchronized(pool) {
       pool.values().forEach(e -> e.getKey().undisplay());
     }

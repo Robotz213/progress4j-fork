@@ -41,7 +41,7 @@ public class ConcurrentProgressFactory implements IProgressFactory {
   }
   
   public ConcurrentProgressFactory(Image icon) {
-    this.threadLocal = new FactoryThreadLocal(icon);
+    this.threadLocal = new ThreadLocalProgressFactory(icon);
   }
   
   @Override
@@ -49,12 +49,12 @@ public class ConcurrentProgressFactory implements IProgressFactory {
     return threadLocal.get(); 
   }
 
-  private class FactoryThreadLocal extends ThreadLocal<IProgressView> {
+  private class ThreadLocalProgressFactory extends ThreadLocal<IProgressView> {
     
     private final IProgressFactory factory;
     
-    private FactoryThreadLocal(Image icon) {
-      this.factory = new ProgressFactoryDisposeNotifier(icon);
+    private ThreadLocalProgressFactory(Image icon) {
+      this.factory = new ThreadLocalDisposerProgressFactory(icon);
     }
     
     @Override
@@ -63,9 +63,9 @@ public class ConcurrentProgressFactory implements IProgressFactory {
     }
   }
   
-  private class ProgressFactoryDisposeNotifier extends SimpleProgressFactory {
+  private class ThreadLocalDisposerProgressFactory extends SimpleProgressFactory {
     
-    ProgressFactoryDisposeNotifier(Image icon) {
+    ThreadLocalDisposerProgressFactory(Image icon) {
       super(icon);
     }
     
