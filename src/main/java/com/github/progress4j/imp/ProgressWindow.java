@@ -82,12 +82,12 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
 
   private static final long serialVersionUID = 1L;
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ProgressWindow.class);  
-
   private static final int MIN_DETAIL_HEIGHT = 312; 
 
   private static final Dimension MININUM_SIZE = new Dimension(450, 154);
   
+  private static final Logger LOGGER = LoggerFactory.getLogger(ProgressWindow.class);  
+
   private final JPanel southPane = new JPanel();
 
   private final JTextArea textArea = new JTextArea();
