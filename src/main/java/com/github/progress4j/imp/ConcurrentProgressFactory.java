@@ -31,11 +31,8 @@ import java.awt.Image;
 
 import com.github.progress4j.IProgressFactory;
 import com.github.progress4j.IProgressView;
-import com.github.utils4j.imp.SuppliedThreadLocal;
 
 public class ConcurrentProgressFactory implements IProgressFactory {  
-
-  private final IProgressFactory factory;
 
   private final ThreadLocal<IProgressView> threadLocal;
 
@@ -44,8 +41,7 @@ public class ConcurrentProgressFactory implements IProgressFactory {
   }
   
   public ConcurrentProgressFactory(Image icon) {
-    this.factory = new ProgressFactoryDisposeNotifier(icon);
-    this.threadLocal = new SuppliedThreadLocal<>(factory::get);
+    this.threadLocal = new FactoryThreadLocal(icon);
   }
   
   @Override
@@ -53,6 +49,20 @@ public class ConcurrentProgressFactory implements IProgressFactory {
     return threadLocal.get(); 
   }
 
+  private class FactoryThreadLocal extends ThreadLocal<IProgressView> {
+    
+    private final IProgressFactory factory;
+    
+    private FactoryThreadLocal(Image icon) {
+      this.factory = new ProgressFactoryDisposeNotifier(icon);
+    }
+    
+    @Override
+    protected IProgressView initialValue() {
+      return factory.get();
+    }
+  }
+  
   private class ProgressFactoryDisposeNotifier extends SimpleProgressFactory {
     
     ProgressFactoryDisposeNotifier(Image icon) {
