@@ -119,7 +119,7 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
     setFixedMinimumSize(MININUM_SIZE);
     setupLayout(log);
     resetProgress();
-    setLocationRelativeTo(null);
+    toCenter();
     setAutoRequestFocus(true);
   }
   
@@ -263,7 +263,7 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
   
   final void reveal() {
     invokeLater(() -> { 
-      this.setLocationRelativeTo(null);
+      this.toCenter();
       this.showToFront(); 
     });
   }
