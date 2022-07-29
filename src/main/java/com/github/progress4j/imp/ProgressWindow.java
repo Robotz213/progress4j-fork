@@ -27,10 +27,10 @@
 
 package com.github.progress4j.imp;
 
+import static com.github.utils4j.gui.imp.SwingTools.invokeAndWait;
 import static com.github.utils4j.gui.imp.SwingTools.invokeLater;
 import static com.github.utils4j.imp.Strings.computeTabs;
 import static com.github.utils4j.imp.Threads.startAsync;
-import static com.github.utils4j.imp.Throwables.tryRun;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 
@@ -75,33 +75,33 @@ import com.github.utils4j.gui.imp.Dialogs;
 import com.github.utils4j.gui.imp.SimpleFrame;
 import com.github.utils4j.imp.Args;
 import com.github.utils4j.imp.Stack;
+import com.github.utils4j.imp.Throwables;
 
 import net.miginfocom.swing.MigLayout;
 
+@SuppressWarnings("serial")
 class ProgressWindow extends SimpleFrame implements ICanceller {
 
-  private static final long serialVersionUID = 1L;
-
-  private static final int MIN_DETAIL_HEIGHT = 312; 
-
-  private static final Dimension MININUM_SIZE = new Dimension(450, 154);
-  
   private static final Logger LOGGER = LoggerFactory.getLogger(ProgressWindow.class);  
 
+  private static final Dimension MININUM_SIZE = new Dimension(450, 154);
+
+  private static final int MIN_DETAIL_HEIGHT = 312; 
+  
   private final JPanel southPane = new JPanel();
 
   private final JTextArea textArea = new JTextArea();
   
   private final JScrollPane centerPane = new JScrollPane();
   
-  private final JProgressBar progressBar = new JProgressBar();
-  
   private final Stack<ProgressState> stackState = new Stack<>();
-
-  private final JLabel seeDetailsPane = new JLabel(SEE_DETAILS);
   
   private final Map<Thread, List<Runnable>> cancelCodes = new HashMap<>(2);  
   
+  private final JProgressBar progressBar = new JProgressBar();
+  
+  private final JLabel seeDetailsPane = new JLabel(SEE_DETAILS);
+
   private int currentHeight = MIN_DETAIL_HEIGHT;
   
   protected boolean maximized = false;
@@ -122,7 +122,7 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
     setLocationRelativeTo(null);
     setAutoRequestFocus(true);
   }
-
+  
   private void setupLayout(ImageIcon log) {
     JPanel contentPane = new JPanel();    
     contentPane.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
@@ -133,6 +133,14 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
     setContentPane(contentPane);
     setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     setupListeners();
+  }
+
+  private JScrollPane center() {
+    textArea.setRows(8);
+    textArea.setEditable(false);
+    centerPane.setViewportView(textArea);
+    centerPane.setVisible(false);
+    return centerPane;
   }
 
   private JPanel south() {
@@ -146,40 +154,6 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
     southPane.add(cancelButton);
     southPane.setVisible(false);
     return southPane;
-  }
-
-  private JScrollPane center() {
-    textArea.setRows(8);
-    textArea.setEditable(false);
-    centerPane.setViewportView(textArea);
-    centerPane.setVisible(false);
-    return centerPane;
-  }
-
-  private JPanel north(ImageIcon log) {
-    final JLabel activityLabel = new JLabel("Registro de atividades");
-    activityLabel.setIcon(log);
-    activityLabel.setHorizontalAlignment(SwingConstants.LEFT);
-    activityLabel.setFont(new Font("Tahoma", Font.BOLD, 15));
-    
-    seeDetailsPane.setVerticalAlignment(SwingConstants.BOTTOM);
-    seeDetailsPane.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-    seeDetailsPane.setHorizontalAlignment(SwingConstants.CENTER);
-    seeDetailsPane.setVerticalAlignment(SwingConstants.CENTER);
-    seeDetailsPane.setForeground(Color.BLUE);
-    seeDetailsPane.setFont(new Font("Tahoma", Font.ITALIC, 12));
-    seeDetailsPane.addMouseListener(new MouseAdapter(){  
-      public void mouseClicked(MouseEvent e) {
-        detailApply();
-      }
-    });
-
-    final JPanel northPane = new JPanel();
-    northPane.setLayout(new GridLayout(3, 1, 0, 0));
-    northPane.add(activityLabel);
-    northPane.add(progressBar);
-    northPane.add(seeDetailsPane);
-    return northPane;
   }
   
   private void setupListeners() {
@@ -196,23 +170,56 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
           onRestore(e);
         }
       }
-   });    
+    });    
   }
 
   private void onRestore(WindowEvent e) {
+    setDetail(!isExpanded());
     maximized = false;
   }
 
   private void onMaximized(WindowEvent e) {
     setDetail(maximized = true);
-    detailApply();
+    applyDetail();
+  }
+
+  private JPanel north(ImageIcon log) {
+    final JPanel north = new JPanel();
+    north.setLayout(new GridLayout(3, 1, 0, 0));
+    north.add(activity(log));
+    north.add(progressBar);
+    north.add(detail());
+    return north;
+  }
+
+  private JLabel activity(ImageIcon log) {
+    final JLabel activityLabel = new JLabel("Registro de atividades");
+    activityLabel.setIcon(log);
+    activityLabel.setHorizontalAlignment(SwingConstants.LEFT);
+    activityLabel.setFont(new Font("Tahoma", Font.BOLD, 15));
+    return activityLabel;
   }
   
+  private JLabel detail() {
+    seeDetailsPane.setVerticalAlignment(SwingConstants.BOTTOM);
+    seeDetailsPane.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    seeDetailsPane.setHorizontalAlignment(SwingConstants.CENTER);
+    seeDetailsPane.setVerticalAlignment(SwingConstants.CENTER);
+    seeDetailsPane.setForeground(Color.BLUE);
+    seeDetailsPane.setFont(new Font("Tahoma", Font.ITALIC, 12));
+    seeDetailsPane.addMouseListener(new MouseAdapter(){  
+      public void mouseClicked(MouseEvent e) {
+        applyDetail();
+      }
+    });
+    return seeDetailsPane;
+  }
+
   private static final String SEE_DETAILS = "<html><u>Ver detalhes</u></html>";
   private static final String HIDE_DETAILS = "<html><u>Esconder detalhes</u></html>";
     
-  private void setDetail(boolean show) {
-    seeDetailsPane.setText(show ? SEE_DETAILS : HIDE_DETAILS);
+  private void setDetail(boolean seeDetail) {
+    seeDetailsPane.setText(seeDetail ? SEE_DETAILS : HIDE_DETAILS);
   }
 
   private void showComponents(boolean show) {
@@ -221,25 +228,44 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
     southPane.setVisible(show);
   }
 
-  private void detailApply() {
-    boolean show = seeDetailsPane.getText().contains("Ver");
+  private boolean isExpanded() {
+    return getBounds().height > MININUM_SIZE.height;
+  }
+  
+  private void applyDetail() {
+    boolean seeDetails = SEE_DETAILS.equals(seeDetailsPane.getText());
     if (maximized) {
-      if (!show) {
+      if (!seeDetails) {
         setExtendedState(JFrame.NORMAL);
         setBounds(getBounds().x, getBounds().y, MININUM_SIZE.width, MININUM_SIZE.height);
         currentHeight = MIN_DETAIL_HEIGHT;
       }
-    } else if (show) {
+    } else if (seeDetails) {
       setBounds(getBounds().x, getBounds().y, getBounds().width, currentHeight);
     } else {
       currentHeight = Math.max(getBounds().height, MIN_DETAIL_HEIGHT);
       setBounds(getBounds().x, getBounds().y, getBounds().width, MININUM_SIZE.height);
     }
-    showComponents(show);
+    showComponents(seeDetails);
   }
   
   protected void onClear(ActionEvent e) {
     textArea.setText("");
+  }
+  
+  final void exit() {
+    invokeLater(super::close);
+  }
+
+  final void unreveal() {
+    invokeLater(() -> this.setVisible(false));
+  }
+  
+  final void reveal() {
+    invokeLater(() -> { 
+      this.setLocationRelativeTo(null);
+      this.showToFront(); 
+    });
   }
   
   @Override
@@ -266,21 +292,6 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
     this.stackState.clear();
   }
 
-  final void reveal() {
-    invokeLater(() -> { 
-      this.setLocationRelativeTo(null);
-      this.showToFront(); 
-    });
-  }
-  
-  final void exit() {
-    invokeLater(super::close);
-  }
-
-  final void unreveal() {
-    invokeLater(() -> this.setVisible(false));
-  }
-
   private long lineNumber = 0;
   final void stepToken(IStepEvent e) {
     final int step = e.getStep();
@@ -288,7 +299,6 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
     final String message = e.getMessage();
     final boolean indeterminated = e.isIndeterminated();
     final StringBuilder text = computeTabs(e.getStackSize());
-    
     final String log;
     if (indeterminated || e.isInfo()){
       log = text.append(message).toString();
@@ -332,24 +342,19 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
 
   final synchronized void cancel() {
     Runnable interrupt = () -> {
-      //A Event Dispatch Thread interrompe as demais e uma outra thread
-      //executa o código de cancelamento, liberando a thread de eventos
-      //o mais rápido possível!
       final List<Runnable> abort = cancelCodes.entrySet().stream()
         .peek(k -> {
-          Thread key = k.getKey();
-          //current thread is Event Dispatch Thread, ever!
-          if (key != Thread.currentThread()) { 
-            key.interrupt();
-          }
+          Thread thread = k.getKey();
+          if (thread != Thread.currentThread()) //ignore EDT ever!
+            thread.interrupt();
         })
-        .map(k -> k.getValue())
+        .map(Map.Entry::getValue)
         .flatMap(Collection::stream)
         .collect(toList());
-      startAsync("canceling", () -> abort.forEach(r -> tryRun(r::run)));
+      startAsync("canceling", () -> abort.forEach(cc -> Throwables.tryRun(cc::run)));
       cancelCodes.clear();
     };
-    invokeLater(interrupt);
+    invokeAndWait(interrupt);
   }
   
   @Override
@@ -385,7 +390,11 @@ class ProgressWindow extends SimpleFrame implements ICanceller {
   }
   
   public static void main(String[] args) {
-    invokeLater(() -> new ProgressWindow().reveal());
+    invokeLater(() -> {
+      ProgressWindow p = new ProgressWindow();
+      p.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+      p.reveal();
+    });
   }
 }
 

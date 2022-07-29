@@ -72,12 +72,12 @@ public class DefaultProgress implements IProgress {
   }
   
   @Override
-  public void begin(String stage) throws InterruptedException {
+  public final void begin(String stage) throws InterruptedException {
     begin(new Stage(stage));
   }
 
   @Override
-  public void begin(String stage, int total) throws InterruptedException {
+  public final void begin(String stage, int total) throws InterruptedException {
     begin(new Stage(stage), total);
   }
   
@@ -126,22 +126,12 @@ public class DefaultProgress implements IProgress {
       currentState.incrementAndGet(1);
     }
     notifyStep(currentState, String.format(message, args), !advance);    
-    
-    /*checkInterrupted();
-    State currentState;
-    if (stack.isEmpty() || (currentState = stack.peek()).isAborted())
-      return;
-    if (advance) {
-      currentState.incrementAndGet(1);
-    }
-    notifyStep(currentState, String.format(message, args), !advance);
-    */
   }
   
   @Override
   public final void end() throws InterruptedException {
     checkInterrupted();
-    if (stack.isEmpty() /*|| stack.peek().isAborted()*/)
+    if (stack.isEmpty())
       return;
     State state = stack.pop();
     state.end();
@@ -156,16 +146,21 @@ public class DefaultProgress implements IProgress {
   }
 
   @Override
-  public final <T extends Throwable> T abort(T e) {
-    Args.requireNonNull(e,  "e is null");
-    State currentState;
-    if (stack.isEmpty() || (currentState = stack.peek()).isAborted())
-      return e;
-    String message = Strings.trim(e.getMessage()) + ". Causa: " + Throwables.rootTrace(e); 
-    notifyStep(currentState.abort(e), message, true);
+  public final <T extends Throwable> T abort(T exception) {
+    Args.requireNonNull(exception,  "e is null");
+    if (stack.isEmpty())
+      return exception;
+    State currentState = stack.peek();
+    if (currentState.isAborted()) {
+      Throwable rootCause = currentState.getAbortCause();
+      rootCause.addSuppressed(exception);
+      return exception;
+    }
+    String message = Strings.trim(exception.getMessage()) + ". Causa: " + Throwables.rootTrace(exception); 
+    notifyStep(currentState.abort(exception), message, true);
     message = currentState.getStage().endString() + " abortado em " + currentState.getTime() + "ms";
     notifyStage(currentState, message, true);
-    return e;
+    return exception;
   }
   
   @Override
@@ -184,7 +179,7 @@ public class DefaultProgress implements IProgress {
       try {
         this.stack.clear();
         this.complete();
-      }finally {
+      } finally {
         this.resetObservables();
         this.closed = true;
       }
