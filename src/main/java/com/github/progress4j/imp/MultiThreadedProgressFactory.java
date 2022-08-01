@@ -28,7 +28,6 @@
 package com.github.progress4j.imp;
 
 import static com.github.utils4j.imp.Throwables.runQuietly;
-import static com.github.utils4j.imp.Throwables.tryRun;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -93,12 +92,18 @@ public class MultiThreadedProgressFactory implements IProgressFactory {
         threadLocal.remove();
         int total = stackSize.decrementAndGet();
         runQuietly(() -> stack.info("Assinado pacote da %s", pv.getName()));
-        stack.remove(pv);
-        if (total == 0) {
-          runQuietly(() -> stack.end());
-          stack.undisplay();
-          stack.dispose();
-          stack = null;
+        try {
+          stack.remove(pv);
+        } finally {
+          if (total == 0) {
+            try {
+              runQuietly(() -> stack.end());
+              stack.undisplay();
+            } finally {
+              stack.dispose();
+              stack = null;
+            }
+          }
         }
       }
     }      
