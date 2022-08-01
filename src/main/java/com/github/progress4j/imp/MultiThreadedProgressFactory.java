@@ -92,7 +92,7 @@ public class MultiThreadedProgressFactory implements IProgressFactory {
       synchronized(stackSize) {
         threadLocal.remove();
         int total = stackSize.decrementAndGet();
-        tryRun(() -> stack.info("Assinado pacote da %s", pv.getName()));
+        runQuietly(() -> stack.info("Assinado pacote da %s", pv.getName()));
         stack.remove(pv);
         if (total == 0) {
           runQuietly(() -> stack.end());

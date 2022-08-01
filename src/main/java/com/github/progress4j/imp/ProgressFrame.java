@@ -55,6 +55,8 @@ import com.github.utils4j.gui.imp.Dialogs;
 import com.github.utils4j.gui.imp.SimpleFrame;
 import com.github.utils4j.imp.Args;
 
+import io.reactivex.disposables.Disposable;
+
 @SuppressWarnings("serial")
 class ProgressFrame extends SimpleFrame implements IProgressHandler<ProgressFrame> {
 
@@ -69,6 +71,8 @@ class ProgressFrame extends SimpleFrame implements IProgressHandler<ProgressFram
   private boolean maximized = false;
   
   private boolean detailed = true;
+  
+  private Disposable detailTicket;
 
   private JPanel center;
   
@@ -210,8 +214,22 @@ class ProgressFrame extends SimpleFrame implements IProgressHandler<ProgressFram
     toCenter();
   }
 
+  @Override
+  public final void dispose() {
+    ticketDispose();
+    super.dispose();
+  }
+
+  private void ticketDispose() {
+    if (detailTicket != null) {
+      detailTicket.dispose();
+      detailTicket = null;
+    }
+  }
+  
   private void setupListeners() {
-    handler.addDetailListener(this::applyDetail);
+    detailTicket = handler.detailStatus().subscribe(this::applyDetail);
+
     addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent windowEvent) {        
         onEscPressed(null);
@@ -272,19 +290,19 @@ class ProgressFrame extends SimpleFrame implements IProgressHandler<ProgressFram
     expandTo(currentHeight);
   }
   
-  protected void applyDetail(boolean detailed) {
+  protected void applyDetail(boolean toshow) {
     if (isMaximized()) {
-      if (!detailed) {
+      if (!toshow) {
         setExtendedState(JFrame.NORMAL);
         expandTo(getDefaultMininumSize());
       }
-    } else if (detailed) {
+    } else if (toshow) {
       packDetail();
     } else {
       expandTo(getDefaultMininumSize().height);
     }
-    this.handler.showComponents(detailed);
-    this.detailed = !detailed;
+    this.handler.showComponents(toshow);
+    this.detailed = !toshow;
   }
   
   public static void main(String[] args) {

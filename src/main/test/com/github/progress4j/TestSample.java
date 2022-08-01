@@ -45,8 +45,8 @@ public class TestSample {
   public static void main(String[] args) throws InterruptedException {
     
     List<Thread> requests = Containers.arrayList(
-//      newRequest(),
-//      newRequest(),
+      newRequest(),
+      newRequest(),
       newRequest(120)
     );
   

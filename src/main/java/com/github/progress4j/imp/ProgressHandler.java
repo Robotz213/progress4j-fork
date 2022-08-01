@@ -38,7 +38,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -56,6 +55,9 @@ import com.github.utils4j.imp.Args;
 import com.github.utils4j.imp.Stack;
 import com.github.utils4j.imp.Throwables;
 
+import io.reactivex.Observable;
+import io.reactivex.subjects.BehaviorSubject;
+
 @SuppressWarnings("serial")
 abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel implements IProgressHandler<T> {
 
@@ -68,10 +70,12 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
   private final Map<Thread, List<Runnable>> cancelCodes = new HashMap<>(2);  
   
   private long lineNumber = 0;
-
+  
   protected final JScrollPane scrollPane = new JScrollPane();
   
   protected final JProgressBar progressBar = new JProgressBar();
+
+  protected final BehaviorSubject<Boolean> detailStatus = BehaviorSubject.create();
 
   protected ProgressHandler() {
     setupLayout();
@@ -93,11 +97,15 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
   }
   
   private final void setupLayout() {
-    buildScroll();
-    resetProgress();
+    setupScroll();
+    setupProgress();
+  }
+  
+  protected final Observable<Boolean> detailStatus() {
+    return this.detailStatus;
   }
 
-  private final void buildScroll() {
+  private final void setupScroll() {
     textArea.setRows(8);
     textArea.setEditable(false);
     textArea.getCaret().setDot(Integer.MAX_VALUE);
@@ -112,9 +120,7 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
     scrollPane.setVisible(visible);  
   }
 
-  abstract void addDetailListener(Consumer<Boolean> consumer);
-
-  private void resetProgress() {
+  private void setupProgress() {
     this.textArea.setText("");
     this.progressBar.setIndeterminate(false);
     this.progressBar.setMaximum(0);

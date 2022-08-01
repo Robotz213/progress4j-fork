@@ -30,7 +30,6 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.function.Consumer;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -93,22 +92,11 @@ class ProgressLine extends ProgressHandler<ProgressLine> {
     progressBar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     progressBar.addMouseListener(new MouseAdapter() {
       public void mousePressed(MouseEvent e) {
-        if (consumer != null) {
-          consumer.accept(!center.isVisible());
-        } else {
-          center.setVisible(!center.isVisible());
-        }
+        detailStatus.onNext(!center.isVisible());
       }
     });
   }
   
-  private Consumer<Boolean> consumer;
-  
-  @Override
-  void addDetailListener(Consumer<Boolean> consumer) {
-    this.consumer = consumer;
-  }
-
   private JPanel center() {
     center.setLayout(new MigLayout());
     center.add(super.scrollPane, "pushx, pushy, growx, growy");

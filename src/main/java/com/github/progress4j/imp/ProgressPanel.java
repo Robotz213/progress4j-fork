@@ -32,7 +32,6 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.function.Consumer;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -48,10 +47,10 @@ class ProgressPanel extends ProgressHandler<ProgressPanel> {
 
   private final JPanel southPane = new JPanel();
 
-  private final JButton cancelButton = new JButton("Cancelar");
-
   private final JLabel detailsPane = new JLabel(SHOW_DETAILS);
   
+  private final JButton cancelButton = new JButton("Cancelar");
+
   ProgressPanel() {
     setupLayout();
   }
@@ -100,23 +99,23 @@ class ProgressPanel extends ProgressHandler<ProgressPanel> {
     detailsPane.setVerticalAlignment(SwingConstants.CENTER);
     detailsPane.setForeground(Color.BLUE);
     detailsPane.setFont(new Font("Tahoma", Font.ITALIC, 12));
-    return detailsPane;
-  }
-  
-  @Override
-  final void addDetailListener(Consumer<Boolean> consumer) {
     detailsPane.addMouseListener(new MouseAdapter(){  
       public void mouseClicked(MouseEvent e) {
-        consumer.accept(isDetailed());
+        detailStatus.onNext(isShowDetail());
       }
     });
+    return detailsPane;
   }
   
   private static final String SHOW_DETAILS = "<html><u>Ver detalhes</u></html>";
   private static final String HIDE_DETAILS = "<html><u>Esconder detalhes</u></html>";
     
-  final boolean isDetailed() {
+  final boolean isShowDetail() {
     return  SHOW_DETAILS.equals(detailsPane.getText());
+  }
+
+  final boolean isHideDetail() {
+    return  !isShowDetail();
   }
 
   private Mode mode = Mode.NORMAL;
@@ -131,13 +130,17 @@ class ProgressPanel extends ProgressHandler<ProgressPanel> {
   @Override
   protected void setMode(Mode mode) {
     setVisible(!Mode.HIDDEN.equals(mode));
+    if (Mode.BATCH.equals(this.mode))
+      return;
     if (Mode.BATCH.equals(mode)) {
-      detailsPane.setText(SHOW_DETAILS);
+      if (isHideDetail()) {
+        detailsPane.setText(SHOW_DETAILS);
+      }
       southPane.setVisible(false);
       super.showComponents(false);
+    } else if (Mode.NORMAL.equals(mode)) {
+      ; //TODO we have to go back here
     }
-    if (Mode.BATCH.equals(this.mode) && !Mode.NORMAL.equals(mode))
-      return;
     this.mode = mode;
   }
 }
