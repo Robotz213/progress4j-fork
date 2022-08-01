@@ -42,7 +42,9 @@ public interface IProgressHandler<T extends Container> extends ICanceller {
 
   void cancel();
   
-  void showComponents(boolean visible);
+  void showSteps(boolean visible);
+  
+  boolean isStepsVisible();
   
   T asContainer();
 

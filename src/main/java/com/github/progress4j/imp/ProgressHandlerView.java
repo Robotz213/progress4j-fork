@@ -61,8 +61,13 @@ abstract class ProgressHandlerView<T extends Container> extends ContainerProgres
   }
   
   @Override
-  public final void showComponents(boolean visible) {
-    handler.showComponents(visible);
+  public final void showSteps(boolean visible) {
+    handler.showSteps(visible);
+  }
+  
+  @Override
+  public final boolean isStepsVisible() {
+    return handler.isStepsVisible();
   }
   
   @Override

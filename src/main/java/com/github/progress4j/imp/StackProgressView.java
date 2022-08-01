@@ -53,9 +53,9 @@ class StackProgressView extends ProgressFrameView {
   private void onDetail(Boolean targetDetail, IContainerProgressView<?> progress) {
     synchronized(tickets) {
       tickets.values().stream().map(Pair::getKey).filter(p -> p != progress).forEach(other -> {
-        other.showComponents(false);
+        other.showSteps(false);
       });
-      progress.showComponents(true);
+      progress.showSteps(!progress.isStepsVisible());
       ((StackProgressFrame)asContainer()).repack();
     }
   }
@@ -84,7 +84,8 @@ class StackProgressView extends ProgressFrameView {
     
     private void repack() {
       invokeLater(() -> {
-        if (!isDetailed() && !isMaximized()) {
+        if (!isMaximized() && (parent().getComponentCount() == 2 || !isDetailed())) {
+          parent().revalidate();
           pack();
         }
       });

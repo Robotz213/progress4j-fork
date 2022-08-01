@@ -234,8 +234,13 @@ class ProgressFrame extends SimpleFrame implements IProgressHandler<ProgressFram
   }
   
   @Override
-  public void showComponents(boolean visible) {
-    this.handler.showComponents(visible);
+  public void showSteps(boolean visible) {
+    this.handler.showSteps(visible);
+  }
+  
+  @Override
+  public boolean isStepsVisible() {
+    return handler.isStepsVisible();
   }
   
   private void setupListeners() {
@@ -258,13 +263,13 @@ class ProgressFrame extends SimpleFrame implements IProgressHandler<ProgressFram
   }
   
   protected void onRestore(WindowEvent e) {
-    this.handler.showComponents(isExpanded());
+    this.handler.showSteps(isExpanded());
     maximized = false;
   }
 
   protected void onMaximized(WindowEvent e) {
     maximized = true;
-    this.handler.showComponents(!maximized);
+    this.handler.showSteps(!maximized);
     applyDetail(maximized);
   }
 
@@ -312,7 +317,7 @@ class ProgressFrame extends SimpleFrame implements IProgressHandler<ProgressFram
     } else {
       expandTo(getDefaultMininumSize().height);
     }
-    showComponents(toshow);
+    showSteps(toshow);
     this.detailed = !toshow;
   }
   

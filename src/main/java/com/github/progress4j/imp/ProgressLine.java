@@ -104,8 +104,13 @@ class ProgressLine extends ProgressHandler<ProgressLine> {
   }
   
   @Override
-  public final void showComponents(boolean visible) {
+  public final void showSteps(boolean visible) {
     center.setVisible(visible);
+  }
+  
+  @Override
+  public final boolean isStepsVisible() {
+    return center.isVisible();
   }
 
   @Override

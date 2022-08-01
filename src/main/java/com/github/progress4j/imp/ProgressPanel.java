@@ -122,12 +122,12 @@ class ProgressPanel extends ProgressHandler<ProgressPanel> {
   private Mode mode = Mode.NORMAL;
   
   @Override
-  public final void showComponents(boolean visible) {
+  public final void showSteps(boolean visible) {
     detailsPane.setText(visible ? HIDE_DETAILS: SHOW_DETAILS);
     southPane.setVisible(visible && Mode.NORMAL.equals(mode));
-    super.showComponents(visible && Mode.NORMAL.equals(mode));
+    super.showSteps(visible && Mode.NORMAL.equals(mode));
   }
-
+  
   @Override
   protected void setMode(Mode mode) {
     setVisible(!Mode.HIDDEN.equals(mode));
@@ -138,7 +138,7 @@ class ProgressPanel extends ProgressHandler<ProgressPanel> {
         detailsPane.setText(SHOW_DETAILS);
       }
       southPane.setVisible(false);
-      super.showComponents(false);
+      super.showSteps(false);
     } else if (Mode.NORMAL.equals(mode)) {
       ; //TODO we have to go back here
     }

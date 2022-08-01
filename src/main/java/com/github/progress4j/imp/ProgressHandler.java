@@ -118,8 +118,13 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
   }
   
   @Override
-  public void showComponents(boolean visible) {
+  public void showSteps(boolean visible) {
     scrollPane.setVisible(visible);  
+  }
+  
+  @Override
+  public boolean isStepsVisible() {
+    return scrollPane.isVisible();
   }
 
   private void setupProgress() {

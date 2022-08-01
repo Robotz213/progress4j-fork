@@ -12,5 +12,7 @@ public interface IContainerProgressView<T extends Container> extends IProgressVi
   
   Observable<Boolean> detailStatus();
 
-  void showComponents(boolean visible);
+  void showSteps(boolean visible);
+
+  boolean isStepsVisible();
 }
