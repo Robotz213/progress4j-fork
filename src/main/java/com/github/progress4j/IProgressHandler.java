@@ -24,48 +24,21 @@
 * SOFTWARE.
 */
 
-
 package com.github.progress4j;
 
-import java.util.function.Consumer;
+import java.awt.Container;
 
-import com.github.utils4j.IDisposable;
+import com.github.utils4j.ICanceller;
 
-import io.reactivex.Observable;
+public interface IProgressHandler<T extends Container> extends ICanceller {
 
-public interface IProgress extends IDisposable {
+  void stepToken(IStepEvent e);
 
-  String getName();
-  
-  void begin(String stage) throws InterruptedException;
+  void stageToken(IStageEvent e);
 
-  void begin(IStage stage) throws InterruptedException;
+  void cancel();
   
-  void begin(String stage, int total) throws InterruptedException;
+  T asContainer();
 
-  void begin(IStage stage, int total) throws InterruptedException;
-  
-  void step(String mensagem, Object... params) throws InterruptedException;
-  
-  void skip(long steps) throws InterruptedException;
-
-  void info(String mensagem, Object... params) throws InterruptedException;
-
-  void end() throws InterruptedException;
-  
-  <T extends Throwable> T abort(T e);
-  
-  Throwable getAbortCause();
-  
-  boolean isClosed();
-  
-  IProgress stackTracer(Consumer<IState> consumer);
-  
-  IProgress reset();
-  
-  Observable<IStepEvent> stepObservable();
-
-  Observable<IStageEvent> stageObservable();
-  
-  Observable<IProgress> disposeObservable();
+  void bind(Thread thread);
 }

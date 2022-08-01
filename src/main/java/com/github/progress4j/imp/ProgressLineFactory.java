@@ -25,47 +25,11 @@
 */
 
 
-package com.github.progress4j;
+package com.github.progress4j.imp;
 
-import java.util.function.Consumer;
-
-import com.github.utils4j.IDisposable;
-
-import io.reactivex.Observable;
-
-public interface IProgress extends IDisposable {
-
-  String getName();
+public class ProgressLineFactory extends ProgressFactory<ProgressLineView> {
   
-  void begin(String stage) throws InterruptedException;
-
-  void begin(IStage stage) throws InterruptedException;
-  
-  void begin(String stage, int total) throws InterruptedException;
-
-  void begin(IStage stage, int total) throws InterruptedException;
-  
-  void step(String mensagem, Object... params) throws InterruptedException;
-  
-  void skip(long steps) throws InterruptedException;
-
-  void info(String mensagem, Object... params) throws InterruptedException;
-
-  void end() throws InterruptedException;
-  
-  <T extends Throwable> T abort(T e);
-  
-  Throwable getAbortCause();
-  
-  boolean isClosed();
-  
-  IProgress stackTracer(Consumer<IState> consumer);
-  
-  IProgress reset();
-  
-  Observable<IStepEvent> stepObservable();
-
-  Observable<IStageEvent> stageObservable();
-  
-  Observable<IProgress> disposeObservable();
+  public ProgressLineFactory() {
+    super(() -> new ProgressLineView());
+  }
 }

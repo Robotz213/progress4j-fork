@@ -25,47 +25,26 @@
 */
 
 
-package com.github.progress4j;
+package com.github.progress4j.imp;
 
-import java.util.function.Consumer;
+import com.github.progress4j.IProgressFactory;
+import com.github.progress4j.IProgressView;
 
-import com.github.utils4j.IDisposable;
+public enum ProgressFactories implements IProgressFactory {
+  
+  LINE(new ProgressFrameLineFactory()),
 
-import io.reactivex.Observable;
+  BOX(new ProgressFrameFactory()),
 
-public interface IProgress extends IDisposable {
+  THREAD(new MultiThreadedProgressFactory());
 
-  String getName();
+  private final IProgressFactory factory;
   
-  void begin(String stage) throws InterruptedException;
+  ProgressFactories(IProgressFactory factory) {
+    this.factory = factory;
+  }
 
-  void begin(IStage stage) throws InterruptedException;
-  
-  void begin(String stage, int total) throws InterruptedException;
-
-  void begin(IStage stage, int total) throws InterruptedException;
-  
-  void step(String mensagem, Object... params) throws InterruptedException;
-  
-  void skip(long steps) throws InterruptedException;
-
-  void info(String mensagem, Object... params) throws InterruptedException;
-
-  void end() throws InterruptedException;
-  
-  <T extends Throwable> T abort(T e);
-  
-  Throwable getAbortCause();
-  
-  boolean isClosed();
-  
-  IProgress stackTracer(Consumer<IState> consumer);
-  
-  IProgress reset();
-  
-  Observable<IStepEvent> stepObservable();
-
-  Observable<IStageEvent> stageObservable();
-  
-  Observable<IProgress> disposeObservable();
+  public IProgressView get() {
+    return factory.get();
+  }  
 }

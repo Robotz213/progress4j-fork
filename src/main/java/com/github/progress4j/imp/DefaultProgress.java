@@ -141,19 +141,21 @@ public class DefaultProgress implements IProgress {
   
   private void checkInterrupted() throws InterruptedException {
     if (Thread.currentThread().isInterrupted()) {
-      throw abort(new InterruptedException(CANCELED_OPERATION_MESSAGE));
+      throw abort(new InterruptedException("A thread foi interrompida!"));
     }
   }
 
   @Override
   public final <T extends Throwable> T abort(T exception) {
-    Args.requireNonNull(exception,  "e is null");
+    Args.requireNonNull(exception,  "exception is null");
     if (stack.isEmpty())
       return exception;
     State currentState = stack.peek();
     if (currentState.isAborted()) {
       Throwable rootCause = currentState.getAbortCause();
-      rootCause.addSuppressed(exception);
+      if (rootCause != exception) {
+        rootCause.addSuppressed(exception);
+      }
       return exception;
     }
     String message = Strings.trim(exception.getMessage()) + ". Causa: " + Throwables.rootTrace(exception); 

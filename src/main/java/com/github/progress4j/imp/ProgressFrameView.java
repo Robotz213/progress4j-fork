@@ -29,67 +29,32 @@ package com.github.progress4j.imp;
 
 import java.awt.Image;
 
-import com.github.progress4j.IProgressView;
-import com.github.utils4j.imp.Ids;
+class ProgressFrameView extends ProgressHandlerView<ProgressFrame> {
 
-import io.reactivex.disposables.Disposable;
-
-class ProgressView extends ProgressWrapper implements IProgressView {
-
-  private final ProgressWindow window;
-  
-  private Disposable stepToken, stageToken; 
-  
-  protected ProgressView(Image icon) {
-    this(Ids.next("progress-"), icon);
+  public ProgressFrameView() {
+    this(Images.LOG.asImage());
   }
   
-  protected ProgressView(String name, Image icon) {
-    super(new DefaultProgress(name));
-    this.window = new ProgressWindow(icon, Images.LOG.asIcon());
-    this.attach();
+  public ProgressFrameView(Image icon) {
+    this(new ProgressFrame(icon));
   }
-
+  
+  protected ProgressFrameView(ProgressFrame frame) {
+    super(frame);
+  }
+  
   @Override
   public void display() {
-    this.window.reveal();
+    asContainer().reveal();
   }
 
   @Override
   public void undisplay() {
-    this.window.unreveal();
+    asContainer().unreveal();
   }
   
   @Override
-  public void dispose() {
-    super.dispose();
-    this.disposeTokens();
-    this.window.exit();
-  }
-  
-  @Override
-  public final IProgressView reset() {
-    super.reset();
-    this.window.cancel();
-    this.disposeTokens();
-    this.attach();
-    this.undisplay();
-    return this;
-  }
-  
-  private void disposeTokens() {
-    stepToken.dispose();
-    stageToken.dispose();
-  } 
-
-  private void attach() {
-    cancelCode(() -> {}); //add current thread is very important!    
-    stepToken = progress.stepObservable().subscribe(window::stepToken); //link stepToken
-    stageToken = progress.stageObservable().subscribe(window::stageToken); //link stageToken
-  }
-
-  @Override
-  public void cancelCode(Runnable cancelCode) {
-    this.window.cancelCode(cancelCode);
+  protected void doDispose() {
+    asContainer().exit();
   }
 }

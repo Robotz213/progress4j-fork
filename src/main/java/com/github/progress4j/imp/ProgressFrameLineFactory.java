@@ -27,52 +27,9 @@
 
 package com.github.progress4j.imp;
 
-import java.awt.Image;
-
-import com.github.progress4j.IProgressFactory;
-import com.github.progress4j.IProgressView;
-
-public class ConcurrentProgressFactory implements IProgressFactory {  
-
-  private final ThreadLocal<IProgressView> threadLocal;
-
-  public ConcurrentProgressFactory() {
-    this(Images.PROGRESS_ICON.asImage());
-  }
+public class ProgressFrameLineFactory extends ProgressFactory<ProgressFrameLineView> {
   
-  public ConcurrentProgressFactory(Image icon) {
-    this.threadLocal = new ThreadLocalProgressFactory(icon);
-  }
-  
-  @Override
-  public IProgressView get() {
-    return threadLocal.get(); 
-  }
-
-  private class ThreadLocalProgressFactory extends ThreadLocal<IProgressView> {
-    
-    private final IProgressFactory factory;
-    
-    private ThreadLocalProgressFactory(Image icon) {
-      this.factory = new ThreadLocalDisposerProgressFactory(icon);
-    }
-    
-    @Override
-    protected IProgressView initialValue() {
-      return factory.get();
-    }
-  }
-  
-  private class ThreadLocalDisposerProgressFactory extends SimpleProgressFactory {
-    
-    ThreadLocalDisposerProgressFactory(Image icon) {
-      super(icon);
-    }
-    
-    @Override
-    protected void onDisposed(IProgressView pv) {
-      threadLocal.remove();
-      super.onDisposed(pv);
-    }      
+  public ProgressFrameLineFactory() {
+    super(() -> new ProgressFrameLineView());
   }
 }

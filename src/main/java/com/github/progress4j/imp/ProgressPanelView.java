@@ -25,47 +25,27 @@
 */
 
 
-package com.github.progress4j;
+package com.github.progress4j.imp;
 
-import java.util.function.Consumer;
+import static com.github.utils4j.gui.imp.SwingTools.invokeLater;
 
-import com.github.utils4j.IDisposable;
+class ProgressPanelView extends ProgressHandlerView<ProgressPanel> {
 
-import io.reactivex.Observable;
+  public ProgressPanelView() {
+    this(new ProgressPanel());
+  }
+  
+  protected ProgressPanelView(ProgressPanel panel) {
+    super(panel);
+  }
+  
+  @Override
+  public void display() {
+    invokeLater(() -> asContainer().setVisible(true));
+  }
 
-public interface IProgress extends IDisposable {
-
-  String getName();
-  
-  void begin(String stage) throws InterruptedException;
-
-  void begin(IStage stage) throws InterruptedException;
-  
-  void begin(String stage, int total) throws InterruptedException;
-
-  void begin(IStage stage, int total) throws InterruptedException;
-  
-  void step(String mensagem, Object... params) throws InterruptedException;
-  
-  void skip(long steps) throws InterruptedException;
-
-  void info(String mensagem, Object... params) throws InterruptedException;
-
-  void end() throws InterruptedException;
-  
-  <T extends Throwable> T abort(T e);
-  
-  Throwable getAbortCause();
-  
-  boolean isClosed();
-  
-  IProgress stackTracer(Consumer<IState> consumer);
-  
-  IProgress reset();
-  
-  Observable<IStepEvent> stepObservable();
-
-  Observable<IStageEvent> stageObservable();
-  
-  Observable<IProgress> disposeObservable();
+  @Override
+  public void undisplay() {
+    invokeLater(() -> asContainer().setVisible(false));
+  }
 }

@@ -32,6 +32,8 @@ import com.github.utils4j.gui.IPicture;
 public enum Images implements IPicture {
   PROGRESS_ICON("/progress.png"),
   
+  CANCEL("/cancel.png"),
+  
   LOG("/log.png");
 
   final String path;

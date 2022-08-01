@@ -27,24 +27,55 @@
 
 package com.github.progress4j;
 
-import com.github.progress4j.imp.SimpleProgressFactory;
+import java.util.List;
+
+import com.github.progress4j.imp.ProgressFactories;
+import com.github.utils4j.imp.Containers;
 import com.github.utils4j.imp.Threads;
+import com.github.utils4j.imp.Throwables;
 
 public class TestSample {
   enum Stage implements IStage {
     PROCESSING
   }
+  
+  static IProgressFactory FACTORY = ProgressFactories.THREAD;
+  
+  
   public static void main(String[] args) throws InterruptedException {
-    SimpleProgressFactory f = new SimpleProgressFactory();
-    Thread t = new Thread(() -> {
-      IProgressView progress = f.get();
+    
+    List<Thread> requests = Containers.arrayList(
+//      newRequest(),
+//      newRequest(),
+      newRequest(120)
+    );
+  
+    for(Thread r: requests) {
+      r.join();
+    }
+    
+    System.out.println("FIM");
+  }
+
+
+  private static Thread newRequest() {
+    return newRequest(-1);
+  }
+  
+  private static Thread newRequest(int childStep) {
+    return Threads.startAsync(() -> {
+      IProgressView progress = FACTORY.get();
       progress.display();
+      Thread child = null;
       try {
         int total = 600;
         progress.begin(Stage.PROCESSING, total);
         for(int i = 1; i <= total; i++) {
           progress.step("Operação  " + i);
-          Threads.sleep(100);
+          Threads.sleep(50);
+          if (i == childStep) {
+            child = newRequest(childStep - 10);
+          }
         }
         progress.end();
         Threads.sleep(100);
@@ -53,9 +84,10 @@ public class TestSample {
       }finally {
         progress.undisplay();
         progress.dispose();
+        if (child != null) {
+          Throwables.tryRun(true, child::join);
+        }
       }
     });
-    t.start();
-    t.join();
   }
 }

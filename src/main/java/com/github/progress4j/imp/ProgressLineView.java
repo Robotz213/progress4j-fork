@@ -27,54 +27,25 @@
 
 package com.github.progress4j.imp;
 
-import java.awt.Image;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import static com.github.utils4j.gui.imp.SwingTools.invokeLater;
 
-import com.github.progress4j.IProgressFactory;
-import com.github.progress4j.IProgressView;
-import com.github.utils4j.imp.Pair;
+class ProgressLineView extends ProgressHandlerView<ProgressLine> {
 
-import io.reactivex.disposables.Disposable;
-
-public class SimpleProgressFactory implements IProgressFactory {  
-
-  private final Map<String, Pair<IProgressView, Disposable>> pool = Collections.synchronizedMap(new HashMap<>());
-  
-  private final Image icon;
-  
-  public SimpleProgressFactory() {
-    this(Images.PROGRESS_ICON.asImage());
+  public ProgressLineView() {
+    this(new ProgressLine());
   }
   
-  public SimpleProgressFactory(Image icon) {
-    this.icon = icon;
-  }
-  
-  public final void display() {
-    synchronized(pool) {
-      pool.values().forEach(e -> e.getKey().display());
-    }
-  }
-  
-  public final void undisplay() {
-    synchronized(pool) {
-      pool.values().forEach(e -> e.getKey().undisplay());
-    }
+  protected ProgressLineView(ProgressLine line) {
+    super(line);
   }
   
   @Override
-  public final IProgressView get() {
-    ProgressView pv =  new ProgressView(icon);
-    pool.put(pv.getName(), Pair.of(pv, pv.disposeObservable().subscribe(p -> {
-      pool.remove(p.getName()).getValue().dispose();
-      onDisposed(pv);      
-    })));
-    return pv; 
+  public void display() {
+    invokeLater(() -> asContainer().setVisible(true));
   }
 
-  protected void onDisposed(IProgressView progress) {
-    
-  }  
+  @Override
+  public void undisplay() {
+    invokeLater(() -> asContainer().setVisible(false));
+  }
 }
