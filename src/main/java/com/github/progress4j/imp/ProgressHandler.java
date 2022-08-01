@@ -108,6 +108,7 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
 
   private final void setupScroll() {
     textArea.setRows(8);
+    textArea.setColumns(10);
     textArea.setEditable(false);
     textArea.getCaret().setDot(Integer.MAX_VALUE);
     scrollPane.setViewportView(textArea);
