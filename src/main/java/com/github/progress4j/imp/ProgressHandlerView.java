@@ -34,6 +34,8 @@ import com.github.progress4j.IStepEvent;
 import com.github.utils4j.imp.Args;
 import com.github.utils4j.imp.Ids;
 
+import io.reactivex.Observable;
+
 abstract class ProgressHandlerView<T extends Container> extends ContainerProgressView<T> {
 
   private final IProgressHandler<T> handler;
@@ -51,6 +53,16 @@ abstract class ProgressHandlerView<T extends Container> extends ContainerProgres
   @Override
   public final T asContainer() {
     return handler.asContainer();
+  }
+  
+  @Override
+  public final Observable<Boolean> detailStatus() {
+    return handler.detailStatus();
+  }
+  
+  @Override
+  public final void showComponents(boolean visible) {
+    handler.showComponents(visible);
   }
   
   @Override

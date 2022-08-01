@@ -45,6 +45,10 @@ import net.miginfocom.swing.MigLayout;
 @SuppressWarnings("serial")
 class ProgressPanel extends ProgressHandler<ProgressPanel> {
 
+  private static final String SHOW_DETAILS = "<html><u>Ver detalhes</u></html>";
+  
+  private static final String HIDE_DETAILS = "<html><u>Esconder detalhes</u></html>";
+  
   private final JPanel southPane = new JPanel();
 
   private final JLabel detailsPane = new JLabel(SHOW_DETAILS);
@@ -107,9 +111,6 @@ class ProgressPanel extends ProgressHandler<ProgressPanel> {
     return detailsPane;
   }
   
-  private static final String SHOW_DETAILS = "<html><u>Ver detalhes</u></html>";
-  private static final String HIDE_DETAILS = "<html><u>Esconder detalhes</u></html>";
-    
   final boolean isShowDetail() {
     return  SHOW_DETAILS.equals(detailsPane.getText());
   }
@@ -121,7 +122,7 @@ class ProgressPanel extends ProgressHandler<ProgressPanel> {
   private Mode mode = Mode.NORMAL;
   
   @Override
-  final void showComponents(boolean visible) {
+  public final void showComponents(boolean visible) {
     detailsPane.setText(visible ? HIDE_DETAILS: SHOW_DETAILS);
     southPane.setVisible(visible && Mode.NORMAL.equals(mode));
     super.showComponents(visible && Mode.NORMAL.equals(mode));

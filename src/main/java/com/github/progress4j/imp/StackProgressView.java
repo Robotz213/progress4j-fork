@@ -5,10 +5,17 @@ import static com.github.utils4j.gui.imp.SwingTools.invokeLater;
 
 import java.awt.Container;
 import java.awt.Dimension;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.github.progress4j.IContainerProgressView;
+import com.github.utils4j.imp.Pair;
+
+import io.reactivex.disposables.Disposable;
 
 class StackProgressView extends ProgressFrameView {
+  
+  private final Map<String, Pair<IContainerProgressView<?>, Disposable>> tickets = new HashMap<>();
   
   protected StackProgressView() {
     super(new StackProgressFrame());
@@ -17,15 +24,42 @@ class StackProgressView extends ProgressFrameView {
   final void push(IContainerProgressView<?> progress) {
     asContainer().add(progress.asContainer());
     cancelCode(progress::interrupt);
+    Disposable ticket = progress.detailStatus().subscribe((targetDetail) -> onDetail(targetDetail, progress));
+    synchronized(tickets) {
+      tickets.put(progress.getName(), Pair.of(progress, ticket));
+    }
   }
   
-  final void remove(ProgressHandlerView<?> pv) {
+  final void remove(IContainerProgressView<?> pv) {
     asContainer().remove(pv.asContainer());
+    synchronized(tickets) {
+      tickets.remove(pv.getName()).getValue().dispose();
+    }
   }
   
   final void setMode(Mode mode) {
     asContainer().setMode(mode);
   }
+
+  @Override
+  protected void doDispose() {
+    synchronized(tickets) {
+      tickets.values().stream().map(Pair::getValue).forEach(Disposable::dispose);
+      tickets.clear();
+    }
+    super.doDispose();
+  }
+  
+  private void onDetail(Boolean targetDetail, IContainerProgressView<?> progress) {
+    synchronized(tickets) {
+      tickets.values().stream().map(Pair::getKey).filter(p -> p != progress).forEach(other -> {
+        other.showComponents(false);
+      });
+      progress.showComponents(true);
+      ((StackProgressFrame)asContainer()).repack();
+    }
+  }
+
 
   @SuppressWarnings("serial")
   static class StackProgressFrame extends ProgressFrame {

@@ -30,15 +30,22 @@ import java.awt.Container;
 
 import com.github.utils4j.ICanceller;
 
+import io.reactivex.Observable;
+
 public interface IProgressHandler<T extends Container> extends ICanceller {
 
   void stepToken(IStepEvent e);
 
   void stageToken(IStageEvent e);
 
+  Observable<Boolean> detailStatus();
+
   void cancel();
+  
+  void showComponents(boolean visible);
   
   T asContainer();
 
   void bind(Thread thread);
+
 }

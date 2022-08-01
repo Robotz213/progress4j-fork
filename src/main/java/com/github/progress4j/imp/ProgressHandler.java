@@ -101,7 +101,8 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
     setupProgress();
   }
   
-  protected final Observable<Boolean> detailStatus() {
+  @Override
+  public final Observable<Boolean> detailStatus() {
     return this.detailStatus;
   }
 
@@ -116,7 +117,8 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
     textArea.setText("");
   }
   
-  void showComponents(boolean visible) {
+  @Override
+  public void showComponents(boolean visible) {
     scrollPane.setVisible(visible);  
   }
 

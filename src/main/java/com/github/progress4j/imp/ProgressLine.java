@@ -104,8 +104,8 @@ class ProgressLine extends ProgressHandler<ProgressLine> {
   }
   
   @Override
-  void showComponents(boolean show) {
-    center.setVisible(show);
+  public final void showComponents(boolean visible) {
+    center.setVisible(visible);
   }
 
   @Override

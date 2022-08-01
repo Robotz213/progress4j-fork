@@ -55,6 +55,7 @@ import com.github.utils4j.gui.imp.Dialogs;
 import com.github.utils4j.gui.imp.SimpleFrame;
 import com.github.utils4j.imp.Args;
 
+import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 
 @SuppressWarnings("serial")
@@ -227,8 +228,18 @@ class ProgressFrame extends SimpleFrame implements IProgressHandler<ProgressFram
     }
   }
   
+  @Override
+  public Observable<Boolean> detailStatus() {
+    return handler.detailStatus();
+  }
+  
+  @Override
+  public void showComponents(boolean visible) {
+    this.handler.showComponents(visible);
+  }
+  
   private void setupListeners() {
-    detailTicket = handler.detailStatus().subscribe(this::applyDetail);
+    detailTicket = detailStatus().subscribe(this::applyDetail);
 
     addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent windowEvent) {        
@@ -301,7 +312,7 @@ class ProgressFrame extends SimpleFrame implements IProgressHandler<ProgressFram
     } else {
       expandTo(getDefaultMininumSize().height);
     }
-    this.handler.showComponents(toshow);
+    showComponents(toshow);
     this.detailed = !toshow;
   }
   
