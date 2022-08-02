@@ -136,6 +136,11 @@ public class DefaultProgress implements IProgress {
     if (stack.isEmpty())
       return;
     State state = stack.pop();
+    if (state.isAborted()) {
+      if (!stack.isEmpty()) {
+        stack.peek().abort(state.getAbortCause());
+      }
+    }
     state.end();
     String message = state.getStage().endString() + " em " + state.getTime() + "ms";
     notifyStage(state, message, true);
@@ -163,10 +168,6 @@ public class DefaultProgress implements IProgress {
       return exception;
     State currentState = stack.peek();
     if (currentState.isAborted()) {
-      Throwable rootCause = currentState.getAbortCause();
-      if (rootCause != exception) {
-        rootCause.addSuppressed(exception);
-      }
       return exception;
     }
     String message = Strings.trim(exception.getMessage()) + ". Causa: " + Throwables.rootTrace(exception); 
