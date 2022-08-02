@@ -33,12 +33,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.github.progress4j.IProgressFactory;
 import com.github.progress4j.IProgressView;
+import com.github.utils4j.IInterruptable;
 
 public class MultiThreadedProgressFactory implements IProgressFactory {  
 
   private StackProgressView stack;
   
-  private final ThreadLocal<IProgressView> threadLocal;
+  private final ThreadLocalProgressFactory threadLocal;
 
   private final AtomicInteger stackSize = new AtomicInteger(0);
 
@@ -47,11 +48,16 @@ public class MultiThreadedProgressFactory implements IProgressFactory {
   }
   
   @Override
+  public void interrupt() {
+    this.threadLocal.interrupt();
+  }
+  
+  @Override
   public IProgressView get() {
     return threadLocal.get(); 
   }
   
-  private class ThreadLocalProgressFactory extends ThreadLocal<IProgressView> {
+  private class ThreadLocalProgressFactory extends ThreadLocal<IProgressView> implements IInterruptable {
     
     private final ProgressLineFactory factory;
     private final StackProgressFactory context;
@@ -77,6 +83,14 @@ public class MultiThreadedProgressFactory implements IProgressFactory {
         stackSize.incrementAndGet();
         return newProgress;
       }
+    }
+
+    @Override
+    public void interrupt() {
+      if (stack != null) {
+        stack.interrupt();
+      }
+      factory.interrupt();
     }
   }
   

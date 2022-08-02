@@ -6,8 +6,6 @@ import io.reactivex.Observable;
 
 public interface IContainerProgressView<T extends Container> extends IProgressView {
   
-  void interrupt();
-  
   T asContainer();
   
   Observable<Boolean> detailStatus();

@@ -38,10 +38,10 @@ public interface IProgressHandler<T extends Container> extends ICanceller {
 
   void stageToken(IStageEvent e);
 
-  Observable<Boolean> detailStatus();
-
   void cancel();
   
+  Observable<Boolean> detailStatus();
+
   void showSteps(boolean visible);
   
   boolean isStepsVisible();

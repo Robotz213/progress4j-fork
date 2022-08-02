@@ -46,6 +46,8 @@ import io.reactivex.subjects.BehaviorSubject;
 public class DefaultProgress implements IProgress {
 
   private boolean closed = false;
+  
+  private volatile boolean interrupted = false;
 
   private final Stack<State> stack = new Stack<State>();
   
@@ -89,7 +91,7 @@ public class DefaultProgress implements IProgress {
   @Override
   public final void begin(IStage stage, int total) throws InterruptedException {
     checkInterrupted();
-    closed = false;
+    closed = interrupted = false;
     State state = new State(stack.isEmpty() ? null : stack.peek(), stage, total);
     notifyStage(state, stage.beginString(), false);
     stack.push(state);
@@ -139,12 +141,21 @@ public class DefaultProgress implements IProgress {
     notifyStage(state, message, true);
   }
   
+  @Override
+  public final void interrupt() {
+    interrupted = true;
+  }
+  
   private void checkInterrupted() throws InterruptedException {
+    if (interrupted) {
+      Thread.currentThread().interrupt();
+      interrupted = false;
+    }
     if (Thread.currentThread().isInterrupted()) {
       throw abort(new InterruptedException("A thread foi interrompida!"));
     }
   }
-
+  
   @Override
   public final <T extends Throwable> T abort(T exception) {
     Args.requireNonNull(exception,  "exception is null");

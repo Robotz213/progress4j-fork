@@ -25,7 +25,6 @@
 
 package com.github.progress4j.imp;
 
-import static com.github.utils4j.gui.imp.SwingTools.invokeAndWait;
 import static com.github.utils4j.gui.imp.SwingTools.invokeLater;
 import static com.github.utils4j.imp.Strings.computeTabs;
 import static com.github.utils4j.imp.Threads.startAsync;
@@ -190,10 +189,13 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
     });    
   }
 
+  static int trava = 0;
   @Override
   public final synchronized void cancel() {//It's very important to be synchronized
+    final Map<Thread, List<Runnable>> copy = new HashMap<>(cancelCodes);
+    cancelCodes.clear();
     Runnable interrupt = () -> {
-      final List<Runnable> abort = cancelCodes.entrySet().stream()
+      final List<Runnable> abort = copy.entrySet().stream()
         .peek(k -> {
           Thread thread = k.getKey();
           if (thread != Thread.currentThread()) //ignore EDT ever!
@@ -203,9 +205,8 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
         .flatMap(Collection::stream)
         .collect(toList());
       startAsync("canceling", () -> abort.forEach(cc -> Throwables.tryRun(cc::run)));
-      cancelCodes.clear();
     };
-    invokeAndWait(interrupt);
+    invokeLater(interrupt);
   }
   
   @Override

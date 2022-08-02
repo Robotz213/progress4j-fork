@@ -46,5 +46,10 @@ public enum ProgressFactories implements IProgressFactory {
 
   public IProgressView get() {
     return factory.get();
+  }
+
+  @Override
+  public void interrupt() {
+    factory.interrupt();
   }  
 }

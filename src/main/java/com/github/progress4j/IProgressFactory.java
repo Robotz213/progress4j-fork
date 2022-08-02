@@ -29,5 +29,7 @@ package com.github.progress4j;
 
 import java.util.function.Supplier;
 
-public interface IProgressFactory extends Supplier<IProgressView> {
+import com.github.utils4j.IInterruptable;
+
+public interface IProgressFactory extends Supplier<IProgressView>, IInterruptable {
 }

@@ -85,6 +85,11 @@ public class ProgressWrapper implements IProgress {
   public void end() throws InterruptedException {
     progress.end();
   }
+  
+  @Override
+  public void interrupt() {
+    progress.interrupt();
+  }
 
   @Override
   public <T extends Throwable> T abort(T e) {

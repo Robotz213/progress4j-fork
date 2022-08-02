@@ -30,10 +30,11 @@ package com.github.progress4j;
 import java.util.function.Consumer;
 
 import com.github.utils4j.IDisposable;
+import com.github.utils4j.IInterruptable;
 
 import io.reactivex.Observable;
 
-public interface IProgress extends IDisposable {
+public interface IProgress extends IDisposable, IInterruptable {
 
   String getName();
   

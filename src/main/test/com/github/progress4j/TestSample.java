@@ -41,15 +41,11 @@ public class TestSample {
   
   static IProgressFactory FACTORY = ProgressFactories.THREAD;
   
-  
   public static void main(String[] args) throws InterruptedException {
     
     List<Thread> requests = Containers.arrayList(
-      newRequest() /*,
-      newRequest(),
-      newRequest(),
-      newRequest() */
-      //newRequest(120)
+      newRequest(30, 600),
+      newRequest(30, 600)
     );
   
     for(Thread r: requests) {
@@ -59,24 +55,18 @@ public class TestSample {
     System.out.println("FIM");
   }
 
-
-  private static Thread newRequest() {
-    return newRequest(-1);
-  }
-  
-  private static Thread newRequest(int childStep) {
+  private static Thread newRequest(int mod, int total) {
     return Threads.startAsync(() -> {
       IProgressView progress = FACTORY.get();
       progress.display();
       Thread child = null;
       try {
-        int total = 600;
         progress.begin(Stage.PROCESSING, total);
         for(int i = 1; i <= total; i++) {
           progress.step("Operação  " + i);
-          Threads.sleep(50);
-          if (i == childStep) {
-            child = newRequest(childStep - 10);
+          Threads.sleep(25);
+          if (i == mod) {
+            child = newRequest(mod, total - mod);
           }
         }
         progress.end();

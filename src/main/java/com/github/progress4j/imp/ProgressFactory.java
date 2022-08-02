@@ -67,6 +67,13 @@ public class ProgressFactory<T extends IProgressView> implements IProgressFactor
   }
   
   @Override
+  public final void interrupt() {
+    synchronized(pool) {
+      pool.values().forEach(e -> e.getKey().interrupt());
+    }
+  } 
+  
+  @Override
   public final T get() {
     T pv =  creator.get();
     pool.put(pv.getName(), Pair.of(pv, pv.disposeObservable().subscribe(p -> {
@@ -78,5 +85,5 @@ public class ProgressFactory<T extends IProgressView> implements IProgressFactor
 
   protected void onDisposed(T progress) {
     
-  }  
+  }
 }
