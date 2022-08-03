@@ -4,9 +4,7 @@ import java.awt.Container;
 
 import io.reactivex.Observable;
 
-public interface IContainerProgressView<T extends Container> extends IProgressView {
-  
-  T asContainer();
+public interface IContainerProgressView<T extends Container> extends IProgressView, IIsContainer<T> {
   
   Observable<Boolean> detailStatus();
 

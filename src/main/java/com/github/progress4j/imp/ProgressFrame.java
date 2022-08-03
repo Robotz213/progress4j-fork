@@ -86,7 +86,7 @@ class ProgressFrame extends SimpleFrame implements IProgressHandler<ProgressFram
   }
   
   ProgressFrame(Image icon) {
-    this(icon, new ProgressPanel());
+    this(icon, new ProgressBox());
   }
 
   ProgressFrame(Image icon, ProgressHandler<?> handler) {
@@ -128,7 +128,7 @@ class ProgressFrame extends SimpleFrame implements IProgressHandler<ProgressFram
     return MININUM_SIZE;
   }
 
-  protected final JPanel parent() {
+  protected final JPanel getHandlerContainer() {
     return center;
   }
   
@@ -181,16 +181,16 @@ class ProgressFrame extends SimpleFrame implements IProgressHandler<ProgressFram
     });
   }
 
-  private void centerUpdate() {
-    center.revalidate();
-    center.updateUI();
-  }
-  
   protected void remove(Container container) {
     invokeLater(() -> {
       center.remove(container); 
       centerUpdate();
     });
+  }
+  
+  private void centerUpdate() {
+    center.revalidate();
+    center.updateUI();
   }
   
   private JLabel header() {
@@ -218,6 +218,7 @@ class ProgressFrame extends SimpleFrame implements IProgressHandler<ProgressFram
   @Override
   public final void dispose() {
     ticketDispose();
+    handler.dispose();
     super.dispose();
   }
 

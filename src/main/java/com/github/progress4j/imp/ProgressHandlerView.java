@@ -72,6 +72,7 @@ abstract class ProgressHandlerView<T extends Container> extends ContainerProgres
   
   @Override
   protected void doDispose() {
+    handler.dispose();
     super.doDispose();
   }
   

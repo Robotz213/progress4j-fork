@@ -110,6 +110,7 @@ public class MultiThreadedProgressFactory implements IProgressFactory {
         try {
           stack.remove(pv);
         } finally {
+          pv.dispose();
           if (total == 0) {
             try {
               runQuietly(stack::end);

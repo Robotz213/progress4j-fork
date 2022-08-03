@@ -84,8 +84,8 @@ class StackProgressView extends ProgressFrameView {
     
     private void repack() {
       invokeLater(() -> {
-        if (!isMaximized() && (parent().getComponentCount() == 2 || !isDetailed())) {
-          parent().revalidate();
+        if (!isMaximized() && (getHandlerContainer().getComponentCount() == 2 || !isDetailed())) {
+          getHandlerContainer().revalidate();
           pack();
         }
       });

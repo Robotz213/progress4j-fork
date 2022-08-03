@@ -44,8 +44,8 @@ public class TestSample {
   public static void main(String[] args) throws InterruptedException {
     
     List<Thread> requests = Containers.arrayList(
-      newRequest(30, 600),
-      newRequest(30, 600)
+      //newRequest(30, 600),
+      newRequest(10, 600)
     );
   
     for(Thread r: requests) {
@@ -64,7 +64,7 @@ public class TestSample {
         progress.begin(Stage.PROCESSING, total);
         for(int i = 1; i <= total; i++) {
           progress.step("Operação  " + i);
-          Threads.sleep(25);
+          Threads.sleep(50);
           if (i == mod) {
             child = newRequest(mod, total - mod);
           }

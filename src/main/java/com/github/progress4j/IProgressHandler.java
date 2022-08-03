@@ -29,25 +29,23 @@ package com.github.progress4j;
 import java.awt.Container;
 
 import com.github.utils4j.ICanceller;
+import com.github.utils4j.IDisposable;
 
 import io.reactivex.Observable;
 
-public interface IProgressHandler<T extends Container> extends ICanceller {
+public interface IProgressHandler<T extends Container> extends ICanceller, IIsContainer<T>, IDisposable {
 
   void stepToken(IStepEvent e);
 
   void stageToken(IStageEvent e);
 
   void cancel();
-  
-  Observable<Boolean> detailStatus();
 
   void showSteps(boolean visible);
   
-  boolean isStepsVisible();
-  
-  T asContainer();
-
   void bind(Thread thread);
 
+  Observable<Boolean> detailStatus();
+  
+  boolean isStepsVisible();
 }

@@ -42,6 +42,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.UIManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +50,7 @@ import org.slf4j.LoggerFactory;
 import com.github.progress4j.IProgressHandler;
 import com.github.progress4j.IStageEvent;
 import com.github.progress4j.IStepEvent;
+import com.github.utils4j.IDisposable;
 import com.github.utils4j.gui.imp.Dialogs;
 import com.github.utils4j.imp.Args;
 import com.github.utils4j.imp.Stack;
@@ -58,9 +60,13 @@ import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 
 @SuppressWarnings("serial")
-abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel implements IProgressHandler<T> {
+abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel implements IProgressHandler<T>, IDisposable {
 
-  protected static final Logger LOGGER = LoggerFactory.getLogger(ProgressPanel.class); 
+//  static {
+//    UIManager.put("ProgressBarUI","javax.swing.plaf.metal.MetalProgressBarUI" );
+//  }
+  
+  protected static final Logger LOGGER = LoggerFactory.getLogger(ProgressBox.class); 
   
   private final JTextArea textArea = new JTextArea();
   
@@ -97,7 +103,7 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
   
   private final void setupLayout() {
     setupScroll();
-    setupProgress();
+    resetProgress();
   }
   
   @Override
@@ -127,7 +133,7 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
     return scrollPane.isVisible();
   }
 
-  private void setupProgress() {
+  private void resetProgress() {
     this.textArea.setText("");
     this.progressBar.setIndeterminate(false);
     this.progressBar.setMaximum(0);
@@ -136,6 +142,11 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
     this.progressBar.setStringPainted(true);
     this.progressBar.setString("");
     this.stackState.clear();
+  }
+  
+  @Override
+  public void dispose() {
+    resetProgress();
   }
   
   @Override
@@ -189,7 +200,6 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
     });    
   }
 
-  static int trava = 0;
   @Override
   public final synchronized void cancel() {//It's very important to be synchronized
     final Map<Thread, List<Runnable>> copy = new HashMap<>(cancelCodes);

@@ -43,7 +43,7 @@ import javax.swing.SwingConstants;
 import net.miginfocom.swing.MigLayout;
 
 @SuppressWarnings("serial")
-class ProgressPanel extends ProgressHandler<ProgressPanel> {
+class ProgressBox extends ProgressHandler<ProgressBox> {
 
   private static final String SHOW_DETAILS = "<html><u>Ver detalhes</u></html>";
   
@@ -55,7 +55,7 @@ class ProgressPanel extends ProgressHandler<ProgressPanel> {
   
   private final JButton cancelButton = new JButton("Cancelar");
 
-  ProgressPanel() {
+  ProgressBox() {
     setupLayout();
   }
   
@@ -67,7 +67,7 @@ class ProgressPanel extends ProgressHandler<ProgressPanel> {
   }
 
   @Override
-  public final ProgressPanel asContainer() {
+  public final ProgressBox asContainer() {
     return this;
   }
   
@@ -77,12 +77,12 @@ class ProgressPanel extends ProgressHandler<ProgressPanel> {
   }
   
   private JPanel south() {
-    JButton btnLimpar = new JButton("Limpar");
-    btnLimpar.setPreferredSize(cancelButton.getPreferredSize());
-    btnLimpar.addActionListener(this::onClear);    
+    JButton cleanButton = new JButton("Limpar");
+    cleanButton.setPreferredSize(cancelButton.getPreferredSize());
+    cleanButton.addActionListener(this::onClear);    
     cancelButton.addActionListener(this::onCancel);
     southPane.setLayout(new MigLayout("fillx", "push[][]", "[][]"));
-    southPane.add(btnLimpar);
+    southPane.add(cleanButton);
     southPane.add(cancelButton);
     southPane.setVisible(false);
     return southPane;
@@ -112,11 +112,11 @@ class ProgressPanel extends ProgressHandler<ProgressPanel> {
   }
   
   final boolean isShowDetail() {
-    return  SHOW_DETAILS.equals(detailsPane.getText());
+    return SHOW_DETAILS.equals(detailsPane.getText());
   }
 
   final boolean isHideDetail() {
-    return  !isShowDetail();
+    return !isShowDetail();
   }
 
   private Mode mode = Mode.NORMAL;

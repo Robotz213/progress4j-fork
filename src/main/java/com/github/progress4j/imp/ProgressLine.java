@@ -53,10 +53,6 @@ class ProgressLine extends ProgressHandler<ProgressLine> {
     return this;
   }
   
-  protected JButton getCancellButton() {
-    return cancelButton;
-  }
-  
   private final void setupLayout() {
     setLayout(new BorderLayout());
     add(north(), BorderLayout.NORTH);

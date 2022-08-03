@@ -29,13 +29,13 @@ package com.github.progress4j.imp;
 
 import static com.github.utils4j.gui.imp.SwingTools.invokeLater;
 
-class ProgressPanelView extends ProgressHandlerView<ProgressPanel> {
+class ProgressPanelView extends ProgressHandlerView<ProgressBox> {
 
   public ProgressPanelView() {
-    this(new ProgressPanel());
+    this(new ProgressBox());
   }
   
-  protected ProgressPanelView(ProgressPanel panel) {
+  protected ProgressPanelView(ProgressBox panel) {
     super(panel);
   }
   
