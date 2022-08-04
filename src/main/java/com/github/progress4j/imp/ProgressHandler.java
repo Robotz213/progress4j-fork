@@ -28,6 +28,7 @@ package com.github.progress4j.imp;
 import static com.github.utils4j.gui.imp.SwingTools.invokeLater;
 import static com.github.utils4j.imp.Strings.computeTabs;
 import static com.github.utils4j.imp.Threads.startAsync;
+import static com.github.utils4j.imp.Throwables.runQuietly;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 
@@ -53,7 +54,6 @@ import com.github.utils4j.IDisposable;
 import com.github.utils4j.gui.imp.Dialogs;
 import com.github.utils4j.imp.Args;
 import com.github.utils4j.imp.Stack;
-import com.github.utils4j.imp.Throwables;
 
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
@@ -209,7 +209,7 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
         .map(Map.Entry::getValue)
         .flatMap(Collection::stream)
         .collect(toList());
-      startAsync("canceling", () -> abort.forEach(cc -> Throwables.tryRun(cc::run)));
+      startAsync("canceling", () -> abort.forEach(cc -> runQuietly(cc::run)));
     };
     invokeLater(interrupt);
   }
