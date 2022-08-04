@@ -29,6 +29,7 @@ package com.github.progress4j.imp;
 
 import com.github.progress4j.IStage;
 import com.github.progress4j.IState;
+import com.github.utils4j.imp.Args;
 import com.github.utils4j.imp.StopWatch;
 import com.github.utils4j.imp.Throwables;
 
@@ -113,10 +114,9 @@ class State implements IState {
     return this;
   }
 
-  final IState abort(Throwable e) {
-    if (e != null) {
-      this.stopWatch.stop((this.abortCause = e).getMessage());
-    }
+  final IState abort(Throwable exception) {
+    Args.requireNonNull(exception, "exception is null");
+    this.stopWatch.stop((this.abortCause = exception).getMessage());
     return this;
   }
   

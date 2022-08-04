@@ -25,6 +25,8 @@
 
 package com.github.progress4j.imp;
 
+import static com.github.utils4j.gui.imp.SwingTools.invokeLater;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -101,7 +103,7 @@ class ProgressLine extends ProgressHandler<ProgressLine> {
   
   @Override
   public final void showSteps(boolean visible) {
-    center.setVisible(visible);
+    invokeLater(() -> center.setVisible(visible));
   }
   
   @Override

@@ -42,7 +42,6 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.UIManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,10 +61,6 @@ import io.reactivex.subjects.BehaviorSubject;
 @SuppressWarnings("serial")
 abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel implements IProgressHandler<T>, IDisposable {
 
-//  static {
-//    UIManager.put("ProgressBarUI","javax.swing.plaf.metal.MetalProgressBarUI" );
-//  }
-  
   protected static final Logger LOGGER = LoggerFactory.getLogger(ProgressBox.class); 
   
   private final JTextArea textArea = new JTextArea();
@@ -125,7 +120,7 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
   
   @Override
   public void showSteps(boolean visible) {
-    scrollPane.setVisible(visible);  
+    invokeLater(() -> scrollPane.setVisible(visible));
   }
   
   @Override
@@ -146,7 +141,7 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
   
   @Override
   public void dispose() {
-    resetProgress();
+    invokeLater(this::resetProgress);
   }
   
   @Override

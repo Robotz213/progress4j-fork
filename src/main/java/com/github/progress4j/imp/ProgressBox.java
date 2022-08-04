@@ -25,6 +25,9 @@
 
 package com.github.progress4j.imp;
 
+import static com.github.utils4j.gui.imp.SwingTools.invokeAndWait;
+import static com.github.utils4j.gui.imp.SwingTools.invokeLater;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -53,8 +56,6 @@ class ProgressBox extends ProgressHandler<ProgressBox> {
 
   private final JLabel detailsPane = new JLabel(SHOW_DETAILS);
   
-  private final JButton cancelButton = new JButton("Cancelar");
-
   ProgressBox() {
     setupLayout();
   }
@@ -77,10 +78,11 @@ class ProgressBox extends ProgressHandler<ProgressBox> {
   }
   
   private JPanel south() {
+    JButton cancelButton = new JButton("Cancelar");
+    cancelButton.addActionListener(this::onCancel);
     JButton cleanButton = new JButton("Limpar");
     cleanButton.setPreferredSize(cancelButton.getPreferredSize());
     cleanButton.addActionListener(this::onClear);    
-    cancelButton.addActionListener(this::onCancel);
     southPane.setLayout(new MigLayout("fillx", "push[][]", "[][]"));
     southPane.add(cleanButton);
     southPane.add(cancelButton);
@@ -123,25 +125,29 @@ class ProgressBox extends ProgressHandler<ProgressBox> {
   
   @Override
   public final void showSteps(boolean visible) {
-    detailsPane.setText(visible ? HIDE_DETAILS: SHOW_DETAILS);
-    southPane.setVisible(visible && Mode.NORMAL.equals(mode));
-    super.showSteps(visible && Mode.NORMAL.equals(mode));
+    invokeLater(() -> {
+      detailsPane.setText(visible ? HIDE_DETAILS: SHOW_DETAILS);
+      southPane.setVisible(visible && Mode.NORMAL.equals(mode));
+      super.showSteps(visible && Mode.NORMAL.equals(mode));
+    });
   }
   
   @Override
   protected void setMode(Mode mode) {
-    setVisible(!Mode.HIDDEN.equals(mode));
-    if (Mode.BATCH.equals(this.mode))
-      return;
-    if (Mode.BATCH.equals(mode)) {
-      if (isHideDetail()) {
-        detailsPane.setText(SHOW_DETAILS);
+    invokeAndWait(() -> {
+      setVisible(!Mode.HIDDEN.equals(mode));
+      if (Mode.BATCH.equals(this.mode))
+        return;
+      if (Mode.BATCH.equals(mode)) {
+        if (isHideDetail()) {
+          detailsPane.setText(SHOW_DETAILS);
+        }
+        southPane.setVisible(false);
+        super.showSteps(false);
+      } else if (Mode.NORMAL.equals(mode)) {
+        ; //TODO we have to go back here
       }
-      southPane.setVisible(false);
-      super.showSteps(false);
-    } else if (Mode.NORMAL.equals(mode)) {
-      ; //TODO we have to go back here
-    }
-    this.mode = mode;
+      this.mode = mode;
+    });
   }
 }
