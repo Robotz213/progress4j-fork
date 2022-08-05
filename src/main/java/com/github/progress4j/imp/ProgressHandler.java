@@ -50,7 +50,6 @@ import org.slf4j.LoggerFactory;
 import com.github.progress4j.IProgressHandler;
 import com.github.progress4j.IStageEvent;
 import com.github.progress4j.IStepEvent;
-import com.github.utils4j.IDisposable;
 import com.github.utils4j.gui.imp.Dialogs;
 import com.github.utils4j.imp.Args;
 import com.github.utils4j.imp.Stack;
@@ -59,7 +58,7 @@ import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 
 @SuppressWarnings("serial")
-abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel implements IProgressHandler<T>, IDisposable {
+abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel implements IProgressHandler<T> {
 
   protected static final Logger LOGGER = LoggerFactory.getLogger(ProgressBox.class); 
   
@@ -141,7 +140,8 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
   
   @Override
   public void dispose() {
-    invokeLater(this::resetProgress);
+    //this is very important because progressBar has a "background thread" to paint indeterminate state
+    invokeLater(this::resetProgress); 
   }
   
   @Override
@@ -226,7 +226,7 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
     bind(thread, () -> {});
   }
 
-  private synchronized final void bind(Thread thread, Runnable code) {
+  private synchronized final void bind(Thread thread, Runnable code) { //It's very important to be synchronized
     List<Runnable> codes = cancelCodes.get(thread);
     if (codes == null)
       cancelCodes.put(thread, codes = new ArrayList<>(2));
