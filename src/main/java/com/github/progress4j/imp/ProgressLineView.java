@@ -32,7 +32,7 @@ import static com.github.utils4j.gui.imp.SwingTools.invokeLater;
 class ProgressLineView extends ProgressHandlerView<ProgressLine> {
 
   public ProgressLineView() {
-    this(new ProgressLine());
+    this(new ProgressLine(false));
   }
   
   protected ProgressLineView(ProgressLine line) {

@@ -1,12 +1,10 @@
 package com.github.progress4j.imp;
 
-import static com.github.utils4j.gui.imp.SwingTools.invokeAndWait;
 import static com.github.utils4j.gui.imp.SwingTools.invokeLater;
 import static com.github.utils4j.imp.Throwables.runQuietly;
 
 import java.awt.Container;
 import java.awt.Dimension;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -14,7 +12,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.swing.SwingUtilities;
 
 import com.github.progress4j.IContainerProgressView;
-import com.github.utils4j.gui.imp.SwingTools;
 import com.github.utils4j.imp.Pair;
 
 import io.reactivex.disposables.Disposable;
@@ -88,7 +85,7 @@ class StackProgressView extends ProgressFrameView {
     private static final Dimension MININUM_SIZE = new Dimension(450, 144);
     
     StackProgressFrame() {
-      super();
+      super(new ProgressBox());
     }
     
     @Override

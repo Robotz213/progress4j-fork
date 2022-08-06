@@ -46,8 +46,12 @@ class ProgressLine extends ProgressHandler<ProgressLine> {
   private JPanel center = new JPanel();
   
   protected ProgressLine() {
+    this(true);
+  }
+  
+  protected ProgressLine(boolean showCancel) {
     setupComponents();
-    setupLayout();
+    setupLayout(showCancel);
   }
 
   @Override
@@ -55,9 +59,9 @@ class ProgressLine extends ProgressHandler<ProgressLine> {
     return this;
   }
   
-  private final void setupLayout() {
+  private final void setupLayout(boolean showCancel) {
     setLayout(new BorderLayout());
-    add(north(), BorderLayout.NORTH);
+    add(north(showCancel), BorderLayout.NORTH);
     add(center(), BorderLayout.CENTER);
   }
 
@@ -77,11 +81,13 @@ class ProgressLine extends ProgressHandler<ProgressLine> {
     cancelButton.addActionListener(this::onCancel);
   }
 
-  private Component north() {
+  private Component north(boolean showCancel) {
     JPanel north = new JPanel();
     north.setLayout(new MigLayout());
     north.add(progressBar, "pushx, growx");
-    north.add(cancelButton);
+    if (showCancel) {
+      north.add(cancelButton);
+    }
     return north;
   }
   
