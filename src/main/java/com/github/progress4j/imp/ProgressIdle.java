@@ -162,4 +162,9 @@ public enum ProgressIdle implements IProgressView {
   public IProgressView reset() {
     return this;
   }
+
+  @Override
+  public void throwIfInterrupted() throws InterruptedException {
+    
+  }
 }

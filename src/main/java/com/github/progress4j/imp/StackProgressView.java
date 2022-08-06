@@ -6,10 +6,15 @@ import static com.github.utils4j.imp.Throwables.runQuietly;
 
 import java.awt.Container;
 import java.awt.Dimension;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
+
+import javax.swing.SwingUtilities;
 
 import com.github.progress4j.IContainerProgressView;
+import com.github.utils4j.gui.imp.SwingTools;
 import com.github.utils4j.imp.Pair;
 
 import io.reactivex.disposables.Disposable;
@@ -37,13 +42,13 @@ class StackProgressView extends ProgressFrameView {
     runQuietly(super::end);
   }
   
-  final void push(IContainerProgressView<?> progress) {
+  final void push(IContainerProgressView<?> progress) throws InterruptedException {
     asContainer().add(progress.asContainer());
-    cancelCode(progress::interrupt);
     Disposable ticketDetail = progress.detailStatus().subscribe((targetDetail) -> onDetail(targetDetail, progress));
     synchronized(tickets) {
       tickets.put(progress.getName(), Pair.of(progress, ticketDetail));
     }
+    cancelCode(progress::interrupt);
   }
   
   final void remove(IContainerProgressView<?> pv) {
@@ -118,8 +123,22 @@ class StackProgressView extends ProgressFrameView {
     }
     
     @Override
-    public void cancelCode(Runnable cancelCode) {
-      invokeAndWait(() -> super.cancelCode(cancelCode));
+    public void cancelCode(Runnable cancelCode) throws InterruptedException {
+      AtomicReference<InterruptedException> ex = new AtomicReference<InterruptedException>();
+      try {
+        SwingUtilities.invokeAndWait(() -> {
+          try {
+            super.cancelCode(cancelCode);
+          } catch (InterruptedException e) {
+            ex.set(e);
+          }
+        });
+      } catch (Exception e) {
+        super.cancelCode(cancelCode);
+      }
+      if (ex.get() != null) {
+        throw ex.get();
+      }
     }
     
     protected Dimension getDefaultMininumSize() {

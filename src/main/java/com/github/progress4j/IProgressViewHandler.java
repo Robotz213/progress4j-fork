@@ -9,6 +9,8 @@ public interface IProgressViewHandler {
   Observable<Boolean> detailStatus();
 
   Observable<Boolean> cancelClick();
+  
+  boolean isCanceled();
 
   boolean isStepsVisible();
 

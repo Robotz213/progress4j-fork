@@ -183,6 +183,15 @@ public class DefaultProgress implements IProgress {
   }
   
   @Override
+  public final void throwIfInterrupted() throws InterruptedException {
+    Throwable cause = getAbortCause();
+    if (cause instanceof InterruptedException) {
+      throw (InterruptedException)cause;
+    }
+  }
+
+  
+  @Override
   public final boolean isClosed() {
     return closed;
   }

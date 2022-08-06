@@ -148,7 +148,12 @@ class ProgressFrame extends SimpleFrame implements IProgressHandler<ProgressFram
   }
   
   @Override
-  public void cancelCode(Runnable cancelCode) {
+  public boolean isCanceled() {
+    return handler.isCanceled();
+  }
+  
+  @Override
+  public void cancelCode(Runnable cancelCode) throws InterruptedException {
     handler.cancelCode(cancelCode);
   }
   

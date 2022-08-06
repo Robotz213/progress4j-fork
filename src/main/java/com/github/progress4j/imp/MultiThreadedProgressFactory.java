@@ -103,7 +103,11 @@ public class MultiThreadedProgressFactory implements IProgressFactory, ICancelle
         } else {
           stack.setMode(Mode.BATCH);
         }
-        stack.push(newLine);
+        try {
+          stack.push(newLine);
+        } catch (InterruptedException e) {
+          newLine.interrupt();
+        }
         stackSize.incrementAndGet();
         return newLine;
       }
@@ -134,7 +138,6 @@ public class MultiThreadedProgressFactory implements IProgressFactory, ICancelle
         try {
           stack.remove(pv);
         } finally {
-          pv.dispose();
           if (total == 0) {
             try {
               stack.end();

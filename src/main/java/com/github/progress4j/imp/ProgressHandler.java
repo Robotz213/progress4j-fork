@@ -27,7 +27,6 @@ package com.github.progress4j.imp;
 
 import static com.github.utils4j.gui.imp.SwingTools.invokeLater;
 import static com.github.utils4j.imp.Strings.computeTabs;
-import static com.github.utils4j.imp.Threads.startAsync;
 import static com.github.utils4j.imp.Throwables.runQuietly;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
@@ -64,6 +63,8 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
   private final Map<Thread, List<Runnable>> cancelCodes = new HashMap<>(2);  
   
   private long lineNumber = 0;
+  
+  private volatile boolean canceled = false;
   
   protected final JScrollPane scrollPane = new JScrollPane();
   
@@ -141,6 +142,11 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
   }
   
   @Override
+  public final boolean isCanceled() {
+    return canceled;
+  }
+  
+  @Override
   public void dispose() {
     //this is very important because progressBar has a "background thread" to paint indeterminate state, so we need to 
     //turn off
@@ -195,30 +201,37 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
         this.stackState.pop().restore(this.progressBar);
     });    
   }
-
+  
+  //It's very important to be synchronized
   @Override
-  public final synchronized void cancel() {//It's very important to be synchronized
-    final Map<Thread, List<Runnable>> copy = new HashMap<>(cancelCodes);
-    cancelCodes.clear();
-    Runnable interrupt = () -> {
-      final List<Runnable> abort = copy.entrySet().stream()
-        .peek(k -> {
-          Thread thread = k.getKey();
-          if (thread != Thread.currentThread()) //ignore Event Dispatcher Thread ever!
-            thread.interrupt();
-        })
-        .map(Map.Entry::getValue)
-        .flatMap(Collection::stream)
-        .collect(toList());
-      startAsync("canceling", () -> abort.forEach(cc -> runQuietly(cc::run)));
-    };
-    invokeLater(interrupt);
-    cancelClick.onNext(true);
+  public final synchronized void cancel() {
+    if (!canceled) {
+      canceled = true;
+      final Map<Thread, List<Runnable>> copy = new HashMap<>(cancelCodes);
+      cancelCodes.clear();
+      Runnable interrupt = () -> {
+        final List<Runnable> abort = copy.entrySet().stream()
+          .peek(k -> {
+            Thread thread = k.getKey();
+            if (thread != Thread.currentThread()) //ignore Event Dispatcher Thread ever!
+              thread.interrupt();
+          })
+          .map(Map.Entry::getValue)
+          .flatMap(Collection::stream)
+          .collect(toList());
+        abort.forEach(cc -> runQuietly(cc::run));
+      };
+      invokeLater(interrupt);
+      cancelClick.onNext(true);
+    }
   }
   
+  //It's very important to be synchronized
   @Override
-  public final void cancelCode(Runnable code) {
+  public final void cancelCode(Runnable code) throws InterruptedException {
     Args.requireNonNull(code, "cancelCode is null");
+    if (canceled)
+      throw new InterruptedException("Este progresso já foi cancelado");
     bind(Thread.currentThread(), code);
   }
   
@@ -228,7 +241,8 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
     bind(thread, () -> {});
   }
 
-  private synchronized final void bind(Thread thread, Runnable code) { //It's very important to be synchronized
+  //It's very important to be synchronized
+  private synchronized final void bind(Thread thread, Runnable code) { 
     List<Runnable> codes = cancelCodes.get(thread);
     if (codes == null)
       cancelCodes.put(thread, codes = new ArrayList<>(2));

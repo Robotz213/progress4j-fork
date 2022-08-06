@@ -56,7 +56,7 @@ public class ProgressViewWrapper extends ProgressWrapper implements IProgressVie
   }
 
   @Override
-  public void cancelCode(Runnable code) {
+  public void cancelCode(Runnable code) throws InterruptedException {
     view().cancelCode(code);
   }
 }

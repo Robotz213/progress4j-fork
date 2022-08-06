@@ -74,6 +74,11 @@ abstract class ProgressHandlerView<T extends Container> extends ContainerProgres
   public Observable<Boolean> cancelClick() {
     return handler.cancelClick();
   }
+  
+  @Override
+  public boolean isCanceled() {
+    return handler.isCanceled();
+  }
 
   @Override
   protected void doDispose() {
@@ -87,7 +92,7 @@ abstract class ProgressHandlerView<T extends Container> extends ContainerProgres
   }
   
   @Override
-  public final void cancelCode(Runnable cancelCode) {
+  public final void cancelCode(Runnable cancelCode) throws InterruptedException {
     handler.cancelCode(cancelCode);
   }
 

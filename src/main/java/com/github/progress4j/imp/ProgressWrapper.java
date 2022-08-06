@@ -142,4 +142,9 @@ public class ProgressWrapper implements IProgress {
   public void skip(long steps) throws InterruptedException {
     progress.skip(steps);
   }
+
+  @Override
+  public void throwIfInterrupted() throws InterruptedException {
+    progress.throwIfInterrupted();
+  }
 }

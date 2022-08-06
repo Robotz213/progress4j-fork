@@ -52,6 +52,8 @@ public interface IProgress extends IDisposable, IInterruptable {
 
   void info(String mensagem, Object... params) throws InterruptedException;
 
+  void throwIfInterrupted() throws InterruptedException;
+
   void end() throws InterruptedException;
   
   <T extends Throwable> T abort(T e);

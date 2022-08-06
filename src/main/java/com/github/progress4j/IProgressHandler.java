@@ -40,4 +40,5 @@ public interface IProgressHandler<T extends Container> extends ICanceller, IIsCo
   void cancel();
 
   void bind(Thread thread);
+
 }
