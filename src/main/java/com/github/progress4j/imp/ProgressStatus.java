@@ -1,6 +1,6 @@
 package com.github.progress4j.imp;
 
-import static com.github.utils4j.imp.Throwables.tryRun;
+import static com.github.utils4j.imp.Throwables.runQuietly;
 
 import java.io.File;
 
@@ -42,7 +42,7 @@ public class ProgressStatus extends DownloadStatus {
   
   @Override
   protected void onStepFail(Throwable e) {
-    tryRun(this::onStepEnd);
+    runQuietly(this::onStepEnd);
   }
   
   @Override

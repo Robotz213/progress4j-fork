@@ -44,9 +44,6 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.github.progress4j.IProgressHandler;
 import com.github.progress4j.IStageEvent;
 import com.github.progress4j.IStepEvent;
@@ -60,8 +57,6 @@ import io.reactivex.subjects.BehaviorSubject;
 @SuppressWarnings("serial")
 abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel implements IProgressHandler<T> {
 
-  protected static final Logger LOGGER = LoggerFactory.getLogger(ProgressBox.class); 
-  
   private final JTextArea textArea = new JTextArea();
   
   private final Stack<ProgressState> stackState = new Stack<>();
@@ -75,6 +70,8 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
   protected final JProgressBar progressBar = new JProgressBar();
 
   protected final BehaviorSubject<Boolean> detailStatus = BehaviorSubject.create();
+
+  private final BehaviorSubject<Boolean> cancelClick = BehaviorSubject.create();
 
   protected ProgressHandler() {
     setupLayout();
@@ -103,6 +100,11 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
   @Override
   public final Observable<Boolean> detailStatus() {
     return this.detailStatus;
+  }
+  
+  @Override
+  public final Observable<Boolean> cancelClick() {
+    return this.cancelClick;
   }
 
   private final void setupScroll() {
@@ -140,7 +142,8 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
   
   @Override
   public void dispose() {
-    //this is very important because progressBar has a "background thread" to paint indeterminate state
+    //this is very important because progressBar has a "background thread" to paint indeterminate state, so we need to 
+    //turn off
     invokeLater(this::resetProgress); 
   }
   
@@ -158,7 +161,6 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
     } else {
       log = text.append(format("Passo %s de %s: %s", step, total, message)).toString();
     }
-    LOGGER.info(log);
     invokeLater(() -> {
       if (!indeterminated) {
         progressBar.setValue(step);
@@ -177,7 +179,6 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
     final StringBuilder tabSize = computeTabs(e.getStackSize());
     final String message = e.getMessage();
     final String text = tabSize.append(message).toString();
-    LOGGER.info(text);
     invokeLater(() -> {
       if (e.isStart())
         this.stackState.push(new ProgressState(this.progressBar));
@@ -203,7 +204,7 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
       final List<Runnable> abort = copy.entrySet().stream()
         .peek(k -> {
           Thread thread = k.getKey();
-          if (thread != Thread.currentThread()) //ignore EDT ever!
+          if (thread != Thread.currentThread()) //ignore Event Dispatcher Thread ever!
             thread.interrupt();
         })
         .map(Map.Entry::getValue)
@@ -212,6 +213,7 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
       startAsync("canceling", () -> abort.forEach(cc -> runQuietly(cc::run)));
     };
     invokeLater(interrupt);
+    cancelClick.onNext(true);
   }
   
   @Override

@@ -32,4 +32,8 @@ import java.util.function.Supplier;
 import com.github.utils4j.IInterruptable;
 
 public interface IProgressFactory extends Supplier<IProgressView>, IInterruptable {
+  
+  default boolean ifCanceller(Runnable code) {
+    return false;
+  };
 }

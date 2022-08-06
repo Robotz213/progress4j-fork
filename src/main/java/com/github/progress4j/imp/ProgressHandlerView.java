@@ -71,6 +71,11 @@ abstract class ProgressHandlerView<T extends Container> extends ContainerProgres
   }
   
   @Override
+  public Observable<Boolean> cancelClick() {
+    return handler.cancelClick();
+  }
+
+  @Override
   protected void doDispose() {
     handler.dispose();
     super.doDispose();

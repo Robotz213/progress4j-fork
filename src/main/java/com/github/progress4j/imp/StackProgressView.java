@@ -2,6 +2,7 @@ package com.github.progress4j.imp;
 
 import static com.github.utils4j.gui.imp.SwingTools.invokeAndWait;
 import static com.github.utils4j.gui.imp.SwingTools.invokeLater;
+import static com.github.utils4j.imp.Throwables.runQuietly;
 
 import java.awt.Container;
 import java.awt.Dimension;
@@ -21,12 +22,27 @@ class StackProgressView extends ProgressFrameView {
     super(new StackProgressFrame());
   }
   
+  @Override
+  public final void begin(String message) {
+    runQuietly(() -> super.begin(message));
+  }
+  
+  @Override
+  public final void info(String message, Object... params) {
+    runQuietly(() -> super.info(message, params));
+  }
+  
+  @Override
+  public final void end() {
+    runQuietly(super::end);
+  }
+  
   final void push(IContainerProgressView<?> progress) {
     asContainer().add(progress.asContainer());
     cancelCode(progress::interrupt);
-    Disposable ticket = progress.detailStatus().subscribe((targetDetail) -> onDetail(targetDetail, progress));
+    Disposable ticketDetail = progress.detailStatus().subscribe((targetDetail) -> onDetail(targetDetail, progress));
     synchronized(tickets) {
-      tickets.put(progress.getName(), Pair.of(progress, ticket));
+      tickets.put(progress.getName(), Pair.of(progress, ticketDetail));
     }
   }
   

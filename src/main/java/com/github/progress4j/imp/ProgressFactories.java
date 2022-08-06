@@ -51,5 +51,10 @@ public enum ProgressFactories implements IProgressFactory {
   @Override
   public void interrupt() {
     factory.interrupt();
-  }  
+  }
+  
+  @Override
+  public boolean ifCanceller(Runnable code) {
+    return factory.ifCanceller(code);
+  }
 }

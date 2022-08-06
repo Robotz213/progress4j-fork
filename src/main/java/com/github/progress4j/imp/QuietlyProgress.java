@@ -27,7 +27,7 @@
 
 package com.github.progress4j.imp;
 
-import static com.github.utils4j.imp.Throwables.tryRun;
+import static com.github.utils4j.imp.Throwables.runQuietly;
 
 import com.github.progress4j.IProgress;
 import com.github.progress4j.IQuietlyProgress;
@@ -45,31 +45,31 @@ public class QuietlyProgress extends ProgressWrapper implements IQuietlyProgress
   
   @Override
   public void begin(IStage stage) {
-    tryRun(() -> progress.begin(stage));
+    runQuietly(() -> progress.begin(stage));
   }
 
   @Override
   public void begin(IStage stage, int total) {
-    tryRun(() -> progress.begin(stage, total));
+    runQuietly(() -> progress.begin(stage, total));
   }
 
   @Override
   public void step(String mensagem, Object... params) {
-    tryRun(() -> progress.step(mensagem, params));
+    runQuietly(() -> progress.step(mensagem, params));
   }
   
   @Override
   public void skip(long steps) {
-    tryRun(() -> progress.skip(steps));
+    runQuietly(() -> progress.skip(steps));
   }
   
   @Override
   public void info(String mensagem, Object... params) {
-    tryRun(() -> progress.info(mensagem, params));
+    runQuietly(() -> progress.info(mensagem, params));
   }
   
   @Override
   public void end() {
-    tryRun(() -> progress.end());
+    runQuietly(() -> progress.end());
   }
 }

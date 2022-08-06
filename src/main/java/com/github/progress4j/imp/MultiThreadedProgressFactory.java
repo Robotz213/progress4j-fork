@@ -29,27 +29,50 @@ package com.github.progress4j.imp;
 
 import static com.github.utils4j.imp.Throwables.runQuietly;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.github.progress4j.IProgressFactory;
 import com.github.progress4j.IProgressView;
+import com.github.utils4j.ICanceller;
 import com.github.utils4j.IInterruptable;
+import com.github.utils4j.imp.Args;
 
-public class MultiThreadedProgressFactory implements IProgressFactory {  
+import io.reactivex.disposables.Disposable;
+
+public class MultiThreadedProgressFactory implements IProgressFactory, ICanceller {  
 
   private StackProgressView stack;
+  
+  private Disposable stackTicketCancel;
   
   private final ThreadLocalProgressFactory threadLocal;
 
   private final AtomicInteger stackSize = new AtomicInteger(0);
+  
+  private final List<Runnable> codes = new ArrayList<>(2);
 
   public MultiThreadedProgressFactory() {
     this.threadLocal = new ThreadLocalProgressFactory();
   }
   
   @Override
+  public final void cancelCode(Runnable code) {
+    Args.requireNonNull(code, "code is null");
+    codes.add(code);
+  }
+  
+  @Override
+  public boolean ifCanceller(Runnable code) {
+    this.cancelCode(code);
+    return true;
+  }  
+  
+  @Override
   public void interrupt() {
     this.threadLocal.interrupt();
+    this.codes.clear();
   }
   
   @Override
@@ -59,29 +82,30 @@ public class MultiThreadedProgressFactory implements IProgressFactory {
   
   private class ThreadLocalProgressFactory extends ThreadLocal<IProgressView> implements IInterruptable {
     
-    private final ProgressLineFactory factory;
-    private final StackProgressFactory context;
+    private final ProgressLineFactory lineFactory;
+    private final StackProgressFactory stackFactory;
     
     private ThreadLocalProgressFactory() {
-      this.factory = new DisposerProgressFactory();
-      this.context = new StackProgressFactory();
+      this.stackFactory = new StackProgressFactory();
+      this.lineFactory = new DisposerProgressFactory();
     }
     
     @Override
     protected IProgressView initialValue() {
       synchronized(stackSize) {
-        ProgressLineView newProgress = factory.get();
+        ProgressLineView newLine = lineFactory.get();
         if (stack == null) {
-          stack = context.get();
+          stack = stackFactory.get();
           stack.setMode(Mode.HIDDEN);
+          stackTicketCancel = stack.cancelClick().subscribe(b -> codes.forEach(c -> runQuietly(c::run)));
           stack.display();
-          runQuietly(() -> stack.begin("Processando em lote..."));
+          stack.begin("Processando em lote...");
         } else {
           stack.setMode(Mode.BATCH);
         }
-        stack.push(newProgress);
+        stack.push(newLine);
         stackSize.incrementAndGet();
-        return newProgress;
+        return newLine;
       }
     }
 
@@ -90,7 +114,7 @@ public class MultiThreadedProgressFactory implements IProgressFactory {
       if (stack != null) {
         stack.interrupt();
       }
-      factory.interrupt();
+      lineFactory.interrupt();
     }
   }
   
@@ -106,18 +130,20 @@ public class MultiThreadedProgressFactory implements IProgressFactory {
         threadLocal.remove();
         int total = stackSize.decrementAndGet();
         Thread.interrupted();//clean interrupted state
-        runQuietly(() -> stack.info("Assinado pacote da %s", pv.getName()));
+        stack.info("Assinado pacote da %s", pv.getName());
         try {
           stack.remove(pv);
         } finally {
           pv.dispose();
           if (total == 0) {
             try {
-              runQuietly(stack::end);
+              stack.end();
               stack.undisplay();
             } finally {
               stack.dispose();
               stack = null;
+              stackTicketCancel.dispose();
+              stackTicketCancel = null;
             }
           }
         }

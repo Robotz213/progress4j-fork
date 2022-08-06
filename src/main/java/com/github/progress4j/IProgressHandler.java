@@ -31,9 +31,7 @@ import java.awt.Container;
 import com.github.utils4j.ICanceller;
 import com.github.utils4j.IDisposable;
 
-import io.reactivex.Observable;
-
-public interface IProgressHandler<T extends Container> extends ICanceller, IIsContainer<T>, IDisposable {
+public interface IProgressHandler<T extends Container> extends ICanceller, IIsContainer<T>, IDisposable, IProgressViewHandler {
 
   void stepToken(IStepEvent e);
 
@@ -41,11 +39,5 @@ public interface IProgressHandler<T extends Container> extends ICanceller, IIsCo
 
   void cancel();
 
-  void showSteps(boolean visible);
-  
   void bind(Thread thread);
-
-  Observable<Boolean> detailStatus();
-  
-  boolean isStepsVisible();
 }

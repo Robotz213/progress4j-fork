@@ -153,6 +153,11 @@ class ProgressFrame extends SimpleFrame implements IProgressHandler<ProgressFram
   }
   
   @Override
+  public Observable<Boolean> cancelClick() {
+    return handler.cancelClick();
+  }
+  
+  @Override
   public void bind(Thread thread) {
     this.handler.bind(thread);
   }
