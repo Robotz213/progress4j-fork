@@ -70,9 +70,9 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
   
   protected final JProgressBar progressBar = new JProgressBar();
 
-  protected final BehaviorSubject<Boolean> detailStatus = BehaviorSubject.create();
-
   private final BehaviorSubject<Boolean> cancelClick = BehaviorSubject.create();
+
+  protected final BehaviorSubject<Boolean> detailStatus = BehaviorSubject.create();
 
   protected ProgressHandler() {
     setupLayout();
@@ -184,7 +184,7 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
     Args.requireNonNull(e, "stage event is null");
     final StringBuilder tabSize = computeTabs(e.getStackSize());
     final String message = e.getMessage();
-    final String text = tabSize.append(message).toString();
+    final String text = tabSize.append(message).append("\n\r").toString();
     invokeLater(() -> {
       if (e.isStart())
         this.stackState.push(new ProgressState(this.progressBar));
@@ -196,7 +196,7 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
         progressBar.setValue(e.getStep());
       }
       this.progressBar.setString(message);
-      textArea.append(text + "\n\r");
+      textArea.append(text);
       if (e.isEnd() && !this.stackState.isEmpty())
         this.stackState.pop().restore(this.progressBar);
     });    
@@ -230,7 +230,7 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
   @Override
   public final void cancelCode(Runnable code) throws InterruptedException {
     Args.requireNonNull(code, "cancelCode is null");
-    if (canceled)
+    if (isCanceled())
       throw new InterruptedException("Este progresso já foi cancelado");
     bind(Thread.currentThread(), code);
   }
