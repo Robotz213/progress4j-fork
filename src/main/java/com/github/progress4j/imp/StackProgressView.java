@@ -29,14 +29,13 @@ package com.github.progress4j.imp;
 
 import static com.github.utils4j.gui.imp.SwingTools.invokeLater;
 import static com.github.utils4j.imp.Throwables.runQuietly;
+import static javax.swing.SwingUtilities.invokeAndWait;
 
 import java.awt.Container;
 import java.awt.Dimension;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
-
-import javax.swing.SwingUtilities;
 
 import com.github.progress4j.IContainerProgressView;
 import com.github.utils4j.imp.Pair;
@@ -150,7 +149,7 @@ class StackProgressView extends ProgressFrameView {
     public void cancelCode(Runnable cancelCode) throws InterruptedException {
       AtomicReference<InterruptedException> ex = new AtomicReference<InterruptedException>();
       try {
-        SwingUtilities.invokeAndWait(() -> {
+        invokeAndWait(() -> {
           try {
             super.cancelCode(cancelCode);
           } catch (InterruptedException e) {
