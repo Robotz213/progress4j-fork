@@ -49,6 +49,7 @@ import com.github.progress4j.IStepEvent;
 import com.github.utils4j.gui.imp.Dialogs;
 import com.github.utils4j.imp.Args;
 import com.github.utils4j.imp.Stack;
+import com.github.utils4j.imp.Strings;
 
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
@@ -172,7 +173,7 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
         progressBar.setValue(step);
       }
       if (lineNumber++ > 800) {
-        textArea.setText(""); //auto clean
+        textArea.setText(Strings.empty()); //auto clean
         lineNumber = 0;
       }
       textArea.append(log + "\n\r");

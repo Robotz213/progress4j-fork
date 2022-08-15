@@ -37,13 +37,21 @@ import com.github.progress4j.IState;
 import com.github.progress4j.IStepEvent;
 
 import io.reactivex.Observable;
+import io.reactivex.subjects.BehaviorSubject;
 
 public enum ProgressIdle implements IProgressView {
   INSTANCE;
   
   private volatile boolean  interrupted = true;
   
+  private BehaviorSubject<IStepEvent> stepSubject;
+  
+  private BehaviorSubject<IStageEvent> stageSubject;
+  
+  private BehaviorSubject<IProgress> disposeSubject;
+  
   private ProgressIdle() {
+    reset();
   }
 
   @Override
@@ -123,17 +131,17 @@ public enum ProgressIdle implements IProgressView {
   
   @Override
   public final Observable<IStepEvent> stepObservable() {
-    return null;
+    return stepSubject;
   }
 
   @Override
   public final Observable<IStageEvent> stageObservable() {
-    return null;
+    return stageSubject;
   }
 
   @Override
   public final Observable<IProgress> disposeObservable() {
-    return null;
+    return disposeSubject;
   }
   
   @Override
@@ -143,9 +151,23 @@ public enum ProgressIdle implements IProgressView {
 
   @Override
   public final void dispose() {
-    ;
+    this.disposeSubject.onNext(this);
+    complete();
+    this.reset();
   }
-
+  
+  private void complete() {
+    try {
+      stepSubject.onComplete();
+    }finally {
+      try {
+        stageSubject.onComplete();
+      }finally {
+        disposeSubject.onComplete();
+      }
+    }
+  }
+  
   @Override
   public void cancelCode(Runnable code) {
   }
@@ -160,6 +182,9 @@ public enum ProgressIdle implements IProgressView {
 
   @Override
   public IProgressView reset() {
+    this.stepSubject = BehaviorSubject.create();
+    this.stageSubject = BehaviorSubject.create();
+    this.disposeSubject = BehaviorSubject.create();
     return this;
   }
 

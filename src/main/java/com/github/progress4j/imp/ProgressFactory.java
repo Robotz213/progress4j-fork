@@ -77,7 +77,10 @@ public class ProgressFactory<T extends IProgressView> implements IProgressFactor
   public final T get() {
     T pv =  creator.get();
     pool.put(pv.getName(), Pair.of(pv, pv.disposeObservable().subscribe(p -> {
-      pool.remove(p.getName()).getValue().dispose();
+      Pair<?, Disposable> item = pool.remove(p.getName());
+      if (item != null) {
+        item.getValue().dispose();
+      }
       onDisposed(pv);      
     })));
     return pv; 

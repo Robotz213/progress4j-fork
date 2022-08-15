@@ -26,36 +26,12 @@
 
 
 package com.github.progress4j.imp;
-import com.github.progress4j.IProgressFactory;
+
 import com.github.progress4j.IProgressView;
 
-public enum ProgressFactories implements IProgressFactory {
+public class ProgressIdleFactory extends ProgressFactory<IProgressView> {
   
-  IDLE(new ProgressIdleFactory()),
-  
-  LINE(new ProgressFrameLineFactory()),
-
-  BOX(new ProgressFrameFactory()),
-
-  THREAD(new MultiThreadedProgressFactory());
-
-  private final IProgressFactory factory;
-  
-  ProgressFactories(IProgressFactory factory) {
-    this.factory = factory;
-  }
-
-  public IProgressView get() {
-    return factory.get();
-  }
-
-  @Override
-  public void interrupt() {
-    factory.interrupt();
-  }
-  
-  @Override
-  public boolean ifCanceller(Runnable code) {
-    return factory.ifCanceller(code);
+  public ProgressIdleFactory() {
+    super(() -> ProgressIdle.INSTANCE);
   }
 }
