@@ -50,6 +50,8 @@ public enum ProgressIdle implements IProgressView {
   
   private BehaviorSubject<IProgress> disposeSubject;
   
+  private Throwable abortCause = null;
+  
   private ProgressIdle() {
     reset();
   }
@@ -116,12 +118,13 @@ public enum ProgressIdle implements IProgressView {
   
   @Override
   public final <T extends Throwable> T abort(T exception) {
+    abortCause = exception;
     return exception;
   }
   
   @Override
   public final Throwable getAbortCause() {
-    return null;
+    return abortCause;
   }
   
   @Override
@@ -189,7 +192,10 @@ public enum ProgressIdle implements IProgressView {
   }
 
   @Override
-  public void throwIfInterrupted() throws InterruptedException {
-    
+  public final void throwIfInterrupted() throws InterruptedException {
+    Throwable cause = getAbortCause();
+    if (cause instanceof InterruptedException) {
+      throw (InterruptedException)cause;
+    }
   }
 }
