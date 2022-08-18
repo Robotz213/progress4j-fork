@@ -48,24 +48,24 @@ public interface IProgress extends IDisposable, IInterruptable {
   
   void step(String mensagem, Object... params) throws InterruptedException;
   
-  void skip(long steps) throws InterruptedException;
-
   void info(String mensagem, Object... params) throws InterruptedException;
 
-  void throwIfInterrupted() throws InterruptedException;
-
   void end() throws InterruptedException;
+
+  void skip(long steps) throws InterruptedException;
+
+  void throwIfInterrupted() throws InterruptedException;
+  
+  boolean isClosed();
+
+  Throwable getAbortCause();
   
   <T extends Throwable> T abort(T e);
   
-  Throwable getAbortCause();
-  
-  boolean isClosed();
-  
-  IProgress stackTracer(Consumer<IState> consumer);
-  
   IProgress reset();
   
+  IProgress stackTracer(Consumer<IState> consumer);
+
   Observable<IStepEvent> stepObservable();
 
   Observable<IStageEvent> stageObservable();
