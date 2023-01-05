@@ -41,7 +41,7 @@
       <dependency>
          <groupId>com.github</groupId>
          <artifactId>utils4j</artifactId>
-         <version>SNAPSHOT-2.2.1</version>
+         <version>SNAPSHOT-2.3.7</version>
       </dependency>
    </dependencies>
    <build>

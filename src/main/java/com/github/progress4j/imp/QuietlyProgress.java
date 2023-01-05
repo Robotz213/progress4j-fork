@@ -52,6 +52,16 @@ public class QuietlyProgress extends ProgressWrapper implements IQuietlyProgress
   public void begin(IStage stage, int total) {
     runQuietly(() -> progress.begin(stage, total));
   }
+  
+  @Override
+  public void begin(String stage) {
+    runQuietly(() -> progress.begin(stage));
+  }
+
+  @Override
+  public void begin(String stage, int total) {
+    runQuietly(() -> progress.begin(stage, total));
+  }
 
   @Override
   public void step(String mensagem, Object... params) {
