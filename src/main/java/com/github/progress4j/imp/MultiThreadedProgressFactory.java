@@ -99,7 +99,7 @@ public class MultiThreadedProgressFactory implements IProgressFactory, ICancelle
           stack.setMode(Mode.HIDDEN);
           stackTicketCancel = stack.cancelClick().subscribe(b -> codes.forEach(c -> runQuietly(c::run)));
           stack.display();
-          stack.begin("Processando em lote...");
+          stack.begin("Processando...");
         } else {
           stack.setMode(Mode.BATCH);
         }
@@ -134,7 +134,7 @@ public class MultiThreadedProgressFactory implements IProgressFactory, ICancelle
         threadLocal.remove();
         int total = stackSize.decrementAndGet();
         Thread.interrupted();//clean interrupted state
-        stack.info("Assinado pacote da %s", pv.getName());
+        stack.info("Fim do processamento. Demanda => %s", pv.getName());
         try {
           stack.remove(pv);
         } finally {

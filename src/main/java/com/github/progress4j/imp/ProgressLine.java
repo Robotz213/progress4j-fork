@@ -67,7 +67,7 @@ class ProgressLine extends ProgressHandler<ProgressLine> {
 
   private void setupComponents() {
     setupCancel();
-    setuProgress();
+    setupProgress();
     setupLog();
   }
 
@@ -91,7 +91,7 @@ class ProgressLine extends ProgressHandler<ProgressLine> {
     return north;
   }
   
-  private void setuProgress() {
+  private void setupProgress() {
     progressBar.setToolTipText("Clique para ver os detalhes.");
     progressBar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     progressBar.addMouseListener(new MouseAdapter() {

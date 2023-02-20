@@ -8,12 +8,13 @@ import com.github.progress4j.IProgress;
 import com.github.progress4j.IStage;
 import com.github.utils4j.imp.Args;
 import com.github.utils4j.imp.DownloadStatus;
+import com.github.utils4j.imp.Sizes;
 
 public class ProgressStatus extends DownloadStatus {
   
   private long total;  
   
-  private int increment = 1;  
+  private long increment = 1;
   
   private final IStage stage;  
   
@@ -56,21 +57,43 @@ public class ProgressStatus extends DownloadStatus {
   @Override
   protected void onStepStart(long total) throws InterruptedException {
     this.total = total;
-    progress.begin(stage, 100);
+    this.increment = 1;
+    if (total > 0)
+      progress.begin(stage, 100);
+    else
+      progress.begin(stage);
   }
   
   @Override
   protected void onStepEnd() throws InterruptedException {
     progress.end();
+    
   }
   
   @Override
   protected void onStepFail(Throwable e) {
+    super.onStepFail(e);
     runQuietly(this::onStepEnd);
   }
   
   @Override
-  protected void onStepStatus(long written) throws InterruptedException { 
+  protected void onStepStatus(long written) throws InterruptedException {
+    if (total > 0) {
+      handlePositive(written);
+    } else {
+      handleNegative(written);
+    }
+  }
+  
+  private void handleNegative(long written) throws InterruptedException {
+    long now = System.currentTimeMillis();
+    if (now - increment > 2000L) {      
+      progress.info("Baixados " + Sizes.defaultFormat(written));
+      increment = now;      
+    }
+  }
+
+  private void handlePositive(long written) throws InterruptedException {
     float percent = 100f * written / total;
     if (percent >= increment) {
       progress.step("Baixados %d%%", increment++);

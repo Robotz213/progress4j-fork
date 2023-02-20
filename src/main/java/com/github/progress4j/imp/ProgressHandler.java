@@ -29,7 +29,6 @@ import static com.github.utils4j.gui.imp.SwingTools.invokeLater;
 import static com.github.utils4j.imp.Strings.computeTabs;
 import static com.github.utils4j.imp.Throwables.runQuietly;
 import static java.lang.String.format;
-import static java.util.stream.Collectors.toList;
 
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
@@ -42,6 +41,9 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.progress4j.IProgressHandler;
 import com.github.progress4j.IStageEvent;
@@ -57,6 +59,8 @@ import io.reactivex.subjects.BehaviorSubject;
 @SuppressWarnings("serial")
 abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel implements IProgressHandler<T> {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(IProgressHandler.class);
+  
   private final JTextArea textArea = new JTextArea();
   
   private final Stack<ProgressState> stackState = new Stack<>();
@@ -168,6 +172,7 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
     } else {
       log = text.append(format("Passo %s de %s: %s", step, total, message)).toString();
     }
+    LOGGER.info(log);
     invokeLater(() -> {
       if (!indeterminated) {
         progressBar.setValue(step);
@@ -185,7 +190,8 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
     Args.requireNonNull(e, "stage event is null");
     final StringBuilder tabSize = computeTabs(e.getStackSize());
     final String message = e.getMessage();
-    final String text = tabSize.append(message).append("\n\r").toString();
+    final String text = tabSize.append(message).toString();
+    LOGGER.info(text);
     invokeLater(() -> {
       if (e.isStart())
         this.stackState.push(new ProgressState(this.progressBar));
@@ -197,7 +203,7 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
         progressBar.setValue(e.getStep());
       }
       this.progressBar.setString(message);
-      textArea.append(text);
+      textArea.append(text + "\n\r");
       if (e.isEnd() && !this.stackState.isEmpty())
         this.stackState.pop().restore(this.progressBar);
     });    
@@ -211,7 +217,7 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
       final Map<Thread, List<Runnable>> copy = new HashMap<>(cancelCodes);
       cancelCodes.clear();
       Runnable interrupt = () -> {
-        final List<Runnable> abort = copy.entrySet().stream()
+        copy.entrySet().stream()
           .peek(k -> {
             Thread thread = k.getKey();
             if (thread != Thread.currentThread()) //ignore Event Dispatcher Thread ever!
@@ -219,8 +225,7 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
           })
           .map(Map.Entry::getValue)
           .flatMap(Collection::stream)
-          .collect(toList());
-        abort.forEach(cc -> runQuietly(cc::run));
+          .forEach(abortCode -> runQuietly(abortCode::run));
       };
       invokeLater(interrupt);
       cancelClick.onNext(true);
