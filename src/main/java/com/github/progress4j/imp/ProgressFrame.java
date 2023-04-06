@@ -109,6 +109,10 @@ class ProgressFrame extends SimpleFrame implements IProgressHandler<ProgressFram
     handler.setMode(mode);
   }
   
+  final Mode getMode() {
+    return handler.getMode();
+  }
+  
   protected Component center() {
     center = new JPanel();
     center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
@@ -165,6 +169,11 @@ class ProgressFrame extends SimpleFrame implements IProgressHandler<ProgressFram
   @Override
   public void bind(Thread thread) {
     this.handler.bind(thread);
+  }
+  
+  @Override
+  public boolean isFrom(Thread thread) {
+    return handler.isFrom(thread);
   }
   
   @Override

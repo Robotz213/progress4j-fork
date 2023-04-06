@@ -76,6 +76,11 @@ public class MultiThreadedProgressFactory implements IProgressFactory, ICancelle
   }
   
   @Override
+  public void cancel(Thread thread) {
+    threadLocal.cancel(thread);
+  }
+  
+  @Override
   public IProgressView get() {
     return threadLocal.get(); 
   }
@@ -114,18 +119,27 @@ public class MultiThreadedProgressFactory implements IProgressFactory, ICancelle
     }
 
     @Override
-    public void interrupt() {
+    public final void interrupt() {
       if (stack != null) {
         stack.interrupt();
       }
       lineFactory.interrupt();
+    }
+    
+    public final void cancel(Thread thread) {
+      if (thread != null ) {
+        if (stack != null) {
+          stack.cancel(thread);
+        }
+        lineFactory.cancel(thread);
+      }
     }
   }
   
   private class DisposerProgressFactory extends ProgressLineFactory {
     
     DisposerProgressFactory() {
-      super();
+      super(false);
     }
     
     @Override
@@ -138,7 +152,9 @@ public class MultiThreadedProgressFactory implements IProgressFactory, ICancelle
         try {
           stack.remove(pv);
         } finally {
-          if (total == 0) {
+          if (total == 1) {
+            stack.setMode(Mode.HIDDEN);
+          } else if (total == 0) {
             try {
               stack.end();
               stack.undisplay();

@@ -74,6 +74,15 @@ public class ProgressFactory<T extends IProgressView> implements IProgressFactor
   } 
   
   @Override
+  public void cancel(Thread thread) {
+    if (thread != null) {
+      synchronized(pool) {
+        pool.values().stream().map(Pair::getKey).filter(p -> p.isFrom(thread)).forEach(IProgressView::cancel);
+      }    
+    }
+  }
+
+  @Override
   public final T get() {
     T pv =  creator.get();
     pool.put(pv.getName(), Pair.of(pv, pv.disposeObservable().subscribe(p -> {

@@ -198,4 +198,14 @@ public enum ProgressIdle implements IProgressView {
       throw (InterruptedException)cause;
     }
   }
+
+  @Override
+  public void cancel() {
+    interrupt();
+  }
+
+  @Override
+  public boolean isFrom(Thread thread) {
+    return false;
+  }
 }

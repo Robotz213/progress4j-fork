@@ -35,5 +35,9 @@ public interface IProgressView extends IProgress, ICanceller {
 
   void undisplay(); 
   
+  void cancel();
+  
+  boolean isFrom(Thread thread);
+
   IProgressView reset();
 }

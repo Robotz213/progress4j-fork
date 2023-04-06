@@ -110,4 +110,14 @@ abstract class ProgressHandlerView<T extends Container> extends ContainerProgres
   protected void bind(Thread thread) {
     handler.bind(thread);
   }
+  
+  @Override
+  public boolean isFrom(Thread thread) {
+    return handler.isFrom(thread);
+  }
+  
+  @Override
+  public void cancel() {
+    handler.cancel();
+  }
 }

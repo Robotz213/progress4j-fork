@@ -29,7 +29,7 @@ package com.github.progress4j.imp;
 
 public class ProgressLineFactory extends ProgressFactory<ProgressLineView> {
   
-  public ProgressLineFactory() {
-    super(() -> new ProgressLineView());
+  public ProgressLineFactory(boolean showCancel) {
+    super(() -> new ProgressLineView(showCancel));
   }
 }

@@ -36,6 +36,8 @@ import java.awt.event.MouseEvent;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import com.github.utils4j.imp.NotImplementedException;
+
 import net.miginfocom.swing.MigLayout;
 
 @SuppressWarnings("serial")
@@ -119,6 +121,11 @@ class ProgressLine extends ProgressHandler<ProgressLine> {
 
   @Override
   protected void setMode(Mode mode) {
-    ;// WE HAVE TO O BACK HERE!
+    throw new NotImplementedException("This feature not implemented for " + getClass().getCanonicalName());
+  }
+
+  @Override
+  protected Mode getMode() {
+    throw new NotImplementedException("This feature not implemented for " + getClass().getCanonicalName());
   }
 }

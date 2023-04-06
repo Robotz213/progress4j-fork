@@ -35,5 +35,7 @@ public interface IProgressFactory extends Supplier<IProgressView>, IInterruptabl
   
   default boolean ifCanceller(Runnable code) {
     return false;
-  };
+  }
+
+  void cancel(Thread thread);
 }

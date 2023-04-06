@@ -136,8 +136,10 @@ class ProgressBox extends ProgressHandler<ProgressBox> {
   protected void setMode(Mode mode) {
     invokeAndWait(() -> {
       setVisible(!Mode.HIDDEN.equals(mode));
-      if (Mode.BATCH.equals(this.mode))
+      if (Mode.BATCH.equals(this.mode)) {
+        this.mode = mode;
         return;
+      }
       if (Mode.BATCH.equals(mode)) {
         if (isHideDetail()) {
           detailsPane.setText(SHOW_DETAILS);
@@ -149,5 +151,10 @@ class ProgressBox extends ProgressHandler<ProgressBox> {
       }
       this.mode = mode;
     });
+  }
+
+  @Override
+  protected Mode getMode() {
+    return this.mode;
   }
 }

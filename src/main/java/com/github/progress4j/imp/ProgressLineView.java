@@ -35,6 +35,10 @@ class ProgressLineView extends ProgressHandlerView<ProgressLine> {
     this(new ProgressLine(false));
   }
   
+  public ProgressLineView(boolean showCancel) {
+    this(new ProgressLine(showCancel));
+  }
+  
   protected ProgressLineView(ProgressLine line) {
     super(line);
   }

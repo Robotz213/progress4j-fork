@@ -33,6 +33,7 @@ import static javax.swing.SwingUtilities.invokeAndWait;
 
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.event.WindowEvent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -65,15 +66,21 @@ class StackProgressView extends ProgressFrameView {
     runQuietly(super::end);
   }
   
+  final void cancel(Thread thread) {
+    synchronized(tickets) {
+      tickets.values().stream().map(Pair::getKey).filter(c -> c.isFrom(thread)).forEach(IContainerProgressView::cancel);
+    }
+  }
+  
   final void push(IContainerProgressView<?> progress) throws InterruptedException {
     asContainer().add(progress.asContainer());
-    Disposable ticketDetail = progress.detailStatus().subscribe((targetDetail) -> onDetail(targetDetail, progress));
+    Disposable ticketDetail = progress.detailStatus().subscribe((targetDetail) -> onDetail(progress));
     synchronized(tickets) {
       tickets.put(progress.getName(), Pair.of(progress, ticketDetail));
     }
     cancelCode(progress::interrupt);
   }
-  
+
   final void remove(IContainerProgressView<?> pv) {
     asContainer().remove(pv.asContainer());
     synchronized(tickets) {
@@ -82,7 +89,16 @@ class StackProgressView extends ProgressFrameView {
   }
   
   final void setMode(Mode mode) {
+    Mode previous = asContainer().getMode();
     asContainer().setMode(mode);
+    if (previous != mode) {
+      invokeLater(() -> {
+        asContainer().applyDetail(false);
+        if (Mode.HIDDEN == mode) {
+          asContainer().pack();
+        }
+      });
+    }
   }
 
   @Override
@@ -94,16 +110,13 @@ class StackProgressView extends ProgressFrameView {
     super.doDispose();
   }
   
-  private void onDetail(Boolean targetDetail, IContainerProgressView<?> progress) {
+  private void onDetail(IContainerProgressView<?> progress) {
     synchronized(tickets) {
-      tickets.values().stream().map(Pair::getKey).filter(p -> p != progress).forEach(other -> {
-        other.showSteps(false);
-      });
+      tickets.values().stream().map(Pair::getKey).filter(p -> p != progress).forEach(other -> other.showSteps(false));
       progress.showSteps(!progress.isStepsVisible());
       ((StackProgressFrame)asContainer()).repack();
     }
   }
-
 
   @SuppressWarnings("serial")
   static class StackProgressFrame extends ProgressFrame {
@@ -117,7 +130,7 @@ class StackProgressView extends ProgressFrameView {
     @Override
     protected void remove(Container container) {
       super.remove(container);
-      repack();
+      repack(1);
     }
       
     @Override
@@ -126,11 +139,36 @@ class StackProgressView extends ProgressFrameView {
       repack();
     }
     
+    @Override
+    protected void onRestore(WindowEvent e) {
+      super.onRestore(e);
+      applyDetail(false);
+      repackSingle();
+    }
+    
+    protected void repackSingle() {
+      repack(getHandlerContainer().getComponentCount() == 1);
+    }
+    
     private void repack() {
+      repack(false);
+    }
+    
+    private void repack(boolean force) { 
+      repack(2, force);
+    }
+    
+    private void repack(int max) { 
+      repack(max, false);
+    }
+    
+    private void repack(int max, boolean force) { 
       invokeLater(() -> {
-        if (!isMaximized() && (getHandlerContainer().getComponentCount() == 2 || !isDetailed())) {
-          getHandlerContainer().revalidate();
-          pack();
+        if (!isMaximized()) {
+          if (getHandlerContainer().getComponentCount() == max || !isDetailed() || force) {
+            getHandlerContainer().revalidate();
+            pack();
+          }
         }
       });
     }

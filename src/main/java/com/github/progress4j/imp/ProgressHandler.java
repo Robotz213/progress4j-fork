@@ -247,6 +247,11 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
     bind(thread, () -> {});
   }
 
+  @Override
+  public synchronized boolean isFrom(Thread thread) {
+    return cancelCodes.get(thread) != null;
+  }
+  
   //It's very important to be synchronized
   private synchronized final void bind(Thread thread, Runnable code) { 
     List<Runnable> codes = cancelCodes.get(thread);
@@ -278,4 +283,6 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
   }
 
   protected abstract void setMode(Mode mode);
+
+  protected abstract Mode getMode();
 }
