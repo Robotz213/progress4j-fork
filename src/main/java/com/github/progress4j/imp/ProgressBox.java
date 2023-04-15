@@ -25,7 +25,6 @@
 
 package com.github.progress4j.imp;
 
-import static com.github.utils4j.gui.imp.SwingTools.invokeAndWait;
 import static com.github.utils4j.gui.imp.SwingTools.invokeLater;
 
 import java.awt.BorderLayout;
@@ -134,7 +133,7 @@ class ProgressBox extends ProgressHandler<ProgressBox> {
   
   @Override
   protected void setMode(Mode mode) {
-    invokeAndWait(() -> {
+    invokeLater(() -> {
       setVisible(!Mode.HIDDEN.equals(mode));
       if (Mode.BATCH.equals(this.mode)) {
         this.mode = mode;

@@ -78,7 +78,7 @@ class StackProgressView extends ProgressFrameView {
     synchronized(tickets) {
       tickets.put(progress.getName(), Pair.of(progress, ticketDetail));
     }
-    cancelCode(progress::interrupt);
+    cancelCode(progress::interrupt);//this is very important!
   }
 
   final void remove(IContainerProgressView<?> pv) {

@@ -139,7 +139,7 @@ public class MultiThreadedProgressFactory implements IProgressFactory, ICancelle
   private class DisposerProgressFactory extends ProgressLineFactory {
     
     DisposerProgressFactory() {
-      super(false);
+      super(true);
     }
     
     @Override
