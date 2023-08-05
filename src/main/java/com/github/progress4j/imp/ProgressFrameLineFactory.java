@@ -30,6 +30,10 @@ package com.github.progress4j.imp;
 public class ProgressFrameLineFactory extends ProgressFactory<ProgressFrameLineView> {
   
   public ProgressFrameLineFactory() {
-    super(() -> new ProgressFrameLineView());
+    this(false);
+  }
+  
+  public ProgressFrameLineFactory(boolean simple) {
+    super(() -> new ProgressFrameLineView(simple));
   }
 }

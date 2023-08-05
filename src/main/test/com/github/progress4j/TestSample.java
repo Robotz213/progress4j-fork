@@ -27,27 +27,39 @@
 
 package com.github.progress4j;
 
+import static com.github.utils4j.imp.Throwables.tryRun;
+
 import java.util.List;
+import java.util.Random;
 
 import com.github.progress4j.imp.ProgressFactories;
-import com.github.utils4j.imp.Containers;
+import com.github.utils4j.gui.imp.LookAndFeelsInstaller;
 import com.github.utils4j.imp.Threads;
-import com.github.utils4j.imp.Throwables;
 
 public class TestSample {
+  
+  static {
+    tryRun(() -> LookAndFeelsInstaller.install("Metal"));
+  }
+  
   enum Stage implements IStage {
     PROCESSING
   }
   
   static IProgressFactory FACTORY = ProgressFactories.THREAD;
   
-  public static void main(String[] args) throws InterruptedException {
-    
-    List<Thread> requests = Containers.arrayList(
-      //newRequest(30, 600),
-      newRequest(10, 600)
-    );
+  static Random RANDOM = new Random();
   
+  public static void main(String[] args) throws InterruptedException {
+
+    List<Thread> requests = new java.util.ArrayList<>();
+    
+    for(int i = 0; i < 1000; i++) {
+      Thread t = newRequest(10, 300);
+      requests.add(t);
+      Thread.sleep(RANDOM.nextInt(5000));
+    }
+
     for(Thread r: requests) {
       r.join();
     }
@@ -59,26 +71,18 @@ public class TestSample {
     return Threads.startAsync(() -> {
       IProgressView progress = FACTORY.get();
       progress.display();
-      Thread child = null;
       try {
         progress.begin(Stage.PROCESSING, total);
         for(int i = 1; i <= total; i++) {
           progress.step("Operação  " + i);
-          Threads.sleep(50);
-          if (i == mod) {
-            child = newRequest(mod, total - mod);
-          }
+          Threads.sleep(RANDOM.nextInt(100));
         }
         progress.end();
-        Threads.sleep(100);
       }catch(Exception e) {
         e.printStackTrace();
       }finally {
         progress.undisplay();
         progress.dispose();
-        if (child != null) {
-          Throwables.tryRun(true, child::join);
-        }
       }
     });
   }

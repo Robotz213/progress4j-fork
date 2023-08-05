@@ -52,6 +52,7 @@ abstract class ContainerProgressView<T extends Container> extends ProgressWrappe
   @Override
   public final void dispose() {
     super.dispose();
+    disposeTokens();
     doDispose();
   }
   
@@ -69,16 +70,21 @@ abstract class ContainerProgressView<T extends Container> extends ProgressWrappe
   }
   
   private void disposeTokens() {
-    this.stepToken.dispose();
-    this.stageToken.dispose();
-    this.disposeToken.dispose();
+    if (stepToken != null)
+      stepToken.dispose();
+    
+    if (stageToken != null)
+      stageToken.dispose();
+    
+    if (disposeToken != null)
+      disposeToken.dispose();
   } 
 
   protected final void bind() {
     bind(Thread.currentThread());  //add current thread is very important!    
-    this.stepToken = progress.stepObservable().subscribe(this::stepToken); //link stepToken
-    this.stageToken = progress.stageObservable().subscribe(this::stageToken); //link stageToken
-    this.disposeToken = progress.disposeObservable().subscribe((p) -> this.disposeTokens());
+    this.stepToken = stepObservable().subscribe(this::stepToken); //link stepToken
+    this.stageToken = stageObservable().subscribe(this::stageToken); //link stageToken
+    this.disposeToken = disposeObservable().subscribe((p) -> this.disposeTokens());
   }
 
   protected abstract void bind(Thread thread);

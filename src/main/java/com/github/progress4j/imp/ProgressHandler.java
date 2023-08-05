@@ -69,7 +69,7 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
   
   private long lineNumber = 0;
   
-  private volatile boolean canceled = false;
+  private volatile boolean disposed, canceled = disposed = false;
   
   protected final JScrollPane scrollPane = new JScrollPane();
   
@@ -78,7 +78,7 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
   private final BehaviorSubject<Boolean> cancelClick = BehaviorSubject.create();
 
   protected final BehaviorSubject<Boolean> detailStatus = BehaviorSubject.create();
-
+  
   protected ProgressHandler() {
     setupLayout();
   }
@@ -152,10 +152,14 @@ abstract class ProgressHandler<T extends ProgressHandler<T>> extends JPanel impl
   }
   
   @Override
-  public void dispose() {
-    //this is very important because progressBar has a "background thread" to paint indeterminate state, so we need to 
-    //turn off
-    invokeLater(this::resetProgress); 
+  public synchronized void dispose() {
+    if (!disposed) {
+      disposed = true;
+      this.cancelCodes.clear();
+      //this is very important because progressBar has a "background thread" to paint indeterminate state, so we need to 
+      //turn off
+      invokeLater(this::resetProgress); 
+    }
   }
   
   @Override

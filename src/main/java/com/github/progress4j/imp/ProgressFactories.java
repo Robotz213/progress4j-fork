@@ -26,6 +26,8 @@
 
 
 package com.github.progress4j.imp;
+import java.util.function.Function;
+
 import com.github.progress4j.IProgressFactory;
 import com.github.progress4j.IProgressView;
 
@@ -36,6 +38,8 @@ public enum ProgressFactories implements IProgressFactory {
   LINE(new ProgressFrameLineFactory()),
 
   BOX(new ProgressFrameFactory()),
+  
+  SIMPLE(new ProgressFrameLineFactory(true)),
 
   THREAD(new MultiThreadedProgressFactory());
 
@@ -62,5 +66,30 @@ public enum ProgressFactories implements IProgressFactory {
   @Override
   public void cancel(Thread currentThread) {
     factory.cancel(currentThread);
+  }
+  
+  public static <T> T withSimple(Function<IProgressView, T> function) {
+    return withFactory(SIMPLE, function);
+  }
+  
+  public static <T> T withLine(Function<IProgressView, T> function) {
+    return withFactory(LINE, function);
+  }
+
+  public static <T> T withBox(Function<IProgressView, T> function) {
+    return withFactory(BOX, function);
+  }
+
+  public static <T> T withThread(Function<IProgressView, T> function) {
+    return withFactory(THREAD, function);
+  }
+
+  private static <T> T withFactory(IProgressFactory factory, Function<IProgressView, T> function) {
+    IProgressView progress = factory.get();
+    try {
+      return function.apply(progress);
+    } finally {
+      progress.dispose();
+    }
   }
 }

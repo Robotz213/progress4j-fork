@@ -42,7 +42,7 @@ import io.reactivex.subjects.BehaviorSubject;
 public enum ProgressIdle implements IProgressView {
   INSTANCE;
   
-  private volatile boolean  interrupted = true;
+  private volatile boolean  interrupted = false;
   
   private BehaviorSubject<IStepEvent> stepSubject;
   

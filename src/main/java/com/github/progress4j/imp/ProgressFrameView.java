@@ -44,12 +44,12 @@ class ProgressFrameView extends ProgressHandlerView<ProgressFrame> {
   }
   
   @Override
-  public void display() {
+  public final void display() {
     asContainer().reveal();
   }
 
   @Override
-  public void undisplay() {
+  public final void undisplay() {
     asContainer().unreveal();
   }
   

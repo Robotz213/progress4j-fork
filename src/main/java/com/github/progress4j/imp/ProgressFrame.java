@@ -41,6 +41,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -214,6 +215,7 @@ class ProgressFrame extends SimpleFrame implements IProgressHandler<ProgressFram
   
   private JLabel header() {
     final JLabel headerLabel = new JLabel("Registro de atividades");
+    headerLabel.setBorder(BorderFactory.createEmptyBorder(6, 6,  3,  0));
     headerLabel.setIcon(Images.LOG.asIcon());
     headerLabel.setHorizontalAlignment(SwingConstants.LEFT);
     headerLabel.setFont(new Font("Tahoma", Font.BOLD, 15));

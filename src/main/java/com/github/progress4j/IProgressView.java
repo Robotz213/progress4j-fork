@@ -27,11 +27,16 @@
 
 package com.github.progress4j;
 
+import static com.github.utils4j.imp.Threads.startDaemon;
+
+import java.util.function.Supplier;
+
 import com.github.utils4j.ICanceller;
+import com.github.utils4j.imp.Args;
 
 public interface IProgressView extends IProgress, ICanceller {
 
-  void display();
+  void display();  
 
   void undisplay(); 
   
@@ -40,4 +45,11 @@ public interface IProgressView extends IProgress, ICanceller {
   boolean isFrom(Thread thread);
 
   IProgressView reset();
+
+  default void displayAsync(long delay, Supplier<Boolean> condition) {
+    Args.requireNonNull(condition, "condition is null");
+    startDaemon(
+        "progress display async", () ->  {  if (condition.get()) display(); }, delay
+    );
+  }
 }

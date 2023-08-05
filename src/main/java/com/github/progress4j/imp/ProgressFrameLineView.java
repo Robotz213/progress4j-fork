@@ -31,10 +31,15 @@ import java.awt.Image;
 class ProgressFrameLineView extends ProgressFrameView {
 
   public ProgressFrameLineView() {
-    this(Images.LOG.asImage());
+    this(Images.LOG.asImage(), false);
   }
   
-  public ProgressFrameLineView(Image icon) {
-    super(new ProgressFrame(icon, new ProgressLine()));
+  public ProgressFrameLineView(boolean simple) {
+    this(Images.LOG.asImage(), simple);
   }
+
+  public ProgressFrameLineView(Image icon, boolean simple) {
+    super(new ProgressFrame(icon, new ProgressLine(!simple)));
+  }
+
 }

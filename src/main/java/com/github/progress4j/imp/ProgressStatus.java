@@ -29,7 +29,7 @@ public class ProgressStatus extends DownloadStatus {
   }
 
   public ProgressStatus(IProgress progress, String stage, File saveHere) {
-    this(progress, stage, true, saveHere);
+    this(progress, stage, saveHere, true);
   }
   
   public ProgressStatus(IProgress progress, IStage stage, File saveHere) {
@@ -44,7 +44,7 @@ public class ProgressStatus extends DownloadStatus {
     this(progress, stage, null, rejectEmpty);
   }
   
-  public ProgressStatus(IProgress progress, String stage, boolean rejectEmpty, File saveHere) { 
+  public ProgressStatus(IProgress progress, String stage, File saveHere, boolean rejectEmpty) { 
     this(progress, new Stage(stage), saveHere, rejectEmpty);
   }  
 

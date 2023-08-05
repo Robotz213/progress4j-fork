@@ -202,6 +202,7 @@ class StackProgressView extends ProgressFrameView {
       }
     }
     
+    @Override
     protected Dimension getDefaultMininumSize() {
       return MININUM_SIZE;
     }

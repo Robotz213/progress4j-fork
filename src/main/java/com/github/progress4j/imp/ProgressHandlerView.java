@@ -71,12 +71,12 @@ abstract class ProgressHandlerView<T extends Container> extends ContainerProgres
   }
   
   @Override
-  public Observable<Boolean> cancelClick() {
+  public final Observable<Boolean> cancelClick() {
     return handler.cancelClick();
   }
   
   @Override
-  public boolean isCanceled() {
+  public final boolean isCanceled() {
     return handler.isCanceled();
   }
 
@@ -107,17 +107,17 @@ abstract class ProgressHandlerView<T extends Container> extends ContainerProgres
   }
   
   @Override
-  protected void bind(Thread thread) {
+  protected final void bind(Thread thread) {
     handler.bind(thread);
   }
   
   @Override
-  public boolean isFrom(Thread thread) {
+  public final boolean isFrom(Thread thread) {
     return handler.isFrom(thread);
   }
   
   @Override
-  public void cancel() {
+  public final void cancel() {
     handler.cancel();
   }
 }
